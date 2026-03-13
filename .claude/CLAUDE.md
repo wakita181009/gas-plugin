@@ -20,7 +20,3 @@ pnpm check            # Lint & format check with Biome
 - [ ] Consider edge cases: re-exports, default exports, namespace exports
 - [ ] Test with clasp 3.x push workflow
 - [ ] Publish to npm
-
-## Related Project
-
-- `/Users/tetsuyawakita/WebstormProjects/fastmoss_scraping/` — the original GAS project that motivated this plugin. Use it as a test case.

@@ -36,6 +36,9 @@
     "url": "https://github.com/wakita181009/gas-vite-plugin"
   },
   "homepage": "https://github.com/wakita181009/gas-vite-plugin#readme",
+  "dependencies": {
+    "tinyglobby": "^0.2.15"
+  },
   "peerDependencies": {
     "vite": ">=5.0.0"
   },

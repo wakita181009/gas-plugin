@@ -1,0 +1,14 @@
+{
+  "name": "gas-webapp",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "gas-vite-plugin": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^8.0.0"
+  }
+}

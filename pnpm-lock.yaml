@@ -25,7 +25,21 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0(@types/node@25.5.0)
 
+  apps/gas-webapp:
+    dependencies:
+      gas-vite-plugin:
+        specifier: workspace:*
+        version: link:../../packages/gas-vite-plugin
+    devDependencies:
+      vite:
+        specifier: ^8.0.0
+        version: 8.0.0(@types/node@25.5.0)
+
   packages/gas-vite-plugin:
+    dependencies:
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.1.0

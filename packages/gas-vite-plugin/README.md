@@ -1,4 +1,4 @@
-# GAS Vite Plugin
+# gas-vite-plugin
 
 A minimal Vite plugin for Google Apps Script (GAS) projects.
 
@@ -6,11 +6,19 @@ Write standard TypeScript with `export function` — the plugin handles the rest
 
 ## Features
 
-- Strips `export` keywords → top-level functions callable by GAS
+- Strips `export` keywords — top-level functions become callable by GAS
 - Copies `appsscript.json` to dist automatically
 - Sets GAS-safe build defaults (no minification, no code splitting)
 - Zero runtime footprint — no code injected into your GAS output
 - V8 runtime assumed — no unnecessary legacy transforms
+- No AST parser dependency — uses Rollup's `generateBundle` hook
+
+## What this plugin does NOT do (by design)
+
+- Arrow function → function declaration conversion (V8 handles this)
+- `console.log` → `Logger.log` conversion
+- Path alias detection (Vite's job)
+- TypeScript compilation (Vite's job via esbuild)
 
 ## Install
 

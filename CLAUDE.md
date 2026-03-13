@@ -9,17 +9,27 @@ Auto-generated from all feature plans. Last updated: 2026-03-13
 ## Project Structure
 
 ```text
-src/
-tests/
+packages/
+  gas-vite-plugin/    # The Vite plugin (published to npm)
+    src/              # Source code (index.ts, transforms.ts)
+    tests/            # Unit + integration tests
 ```
 
 ## Commands
 
-npm test && npm run lint
+```bash
+pnpm test             # Run tests
+pnpm check            # Lint & format with Biome
+pnpm build            # Build all packages
+```
 
 ## Code Style
 
-TypeScript 5.x (compiled via Vite/esbuild): Follow standard conventions
+TypeScript 5.x (compiled via Vite/esbuild): Follow standard conventions. See `biome.json` for lint/format rules.
+
+## Design Principles & Architecture
+
+See [`.specify/memory/constitution.md`](.specify/memory/constitution.md) for design principles, architecture constraints, and governance.
 
 ## Recent Changes
 

@@ -1,50 +1,81 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# gas-vite-plugin Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Minimalism — Do Only What GAS Requires
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+The plugin handles **only** the gap between Vite's output and what Google Apps Script expects. Everything else (TypeScript compilation, path aliases, tree-shaking) is Vite's job. If Vite or esbuild already handles it, we don't touch it.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- No arrow function conversion (V8 handles modern JS)
+- No `console.log` → `Logger.log` conversion
+- No AST parser dependency — regex-based transforms via Rollup's `generateBundle` hook
+- Feature additions must justify why Vite/esbuild cannot handle the concern
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. V8 Runtime Assumed
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+All output targets the GAS V8 runtime. No legacy transforms, no ES5 downleveling. This keeps the plugin simple and the output readable.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### III. Vite-Native Integration
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+The plugin is a well-behaved Vite plugin that follows Vite's plugin API conventions:
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- Uses `enforce: "post"` and `apply: "build"` — only runs during build, after other plugins
+- Uses `config` hook to set sensible defaults (`minify: false`, code-splitting disabled for GAS)
+- Uses `generateBundle` for post-processing (not custom loaders or resolvers)
+- Uses `closeBundle` for file operations (manifest copy)
+- Peer dependency: `vite >=5.0.0` (supports Vite 5, 6, 7, 8+)
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### IV. Dual Output — ES + CJS
+
+The plugin itself ships as both ESM (`dist/index.js`) and CJS (`dist/index.cjs`) with bundled type declarations (`dist/index.d.ts`). This ensures compatibility with both `import` and `require` consumers.
+
+### V. Test-First with 100% Coverage on Core Logic
+
+- `transforms.ts` (the core logic) enforces **100% coverage** across statements, branches, functions, and lines
+- Unit tests validate each transform function in isolation
+- Integration tests run real Vite builds against fixture projects and assert on actual output
+- Fixtures are created and torn down per test — no shared mutable state
+
+### VI. Strict Code Quality via Biome
+
+Biome enforces lint + format with strict rules:
+
+- `noFloatingPromises`, `noMisusedPromises`, `noNestedPromises` — async safety
+- `noUnusedImports`, `noUnusedVariables` — no dead code
+- `noBarrelFile`, `noReExportAll` — explicit exports only (except where `biome-ignore` is justified)
+- `useNamingConvention` — camelCase/PascalCase for functions, CONSTANT_CASE allowed for const
+- `noConsole: warn` — console usage requires explicit `biome-ignore` justification
+- Formatter: 2-space indent, double quotes, trailing commas, semicolons always
+
+## Project Structure
+
+- **Monorepo**: pnpm workspace (`packages/*`, `apps/*`)
+- **Package manager**: pnpm 10.x (corepack-managed via `packageManager` field)
+- **TypeScript**: ES2022 target, bundler module resolution, strict mode
+- **Build**: Vite library mode (entry: `src/index.ts`) with `vite-plugin-dts` for type generation
+- **External**: `vite`, `node:fs`, `node:path`, `node:fs/promises` are externalized — not bundled
+
+## Architecture Constraints
+
+- **Two-file core**: `src/index.ts` (plugin factory + Vite hooks) and `src/transforms.ts` (pure string transforms). Keep this separation — hooks orchestrate, transforms are pure and testable.
+- **No runtime dependencies**: The plugin has zero production dependencies. Only `vite` as peer dep.
+- **Plugin options are minimal**: Currently only `manifest?: string`. New options must justify their necessity. The `GasPluginOptions` interface is the public API contract.
+
+## What This Plugin Does NOT Do (by design)
+
+These are intentional omissions, not TODOs:
+
+- Arrow function → function declaration conversion
+- `console.log` → `Logger.log` conversion
+- Path alias detection
+- TypeScript compilation
+- Any AST parsing
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- Constitution supersedes ad-hoc decisions
+- Changes to core transforms require both unit and integration test coverage
+- New plugin options require documentation in the `GasPluginOptions` interface JSDoc
+- Breaking changes to the public API require a major version bump
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-03-13 | **Last Amended**: 2026-03-13

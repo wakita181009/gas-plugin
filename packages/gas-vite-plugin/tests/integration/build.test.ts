@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { build } from "vite";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import gasPlugin from "../../src/index.js";
 
 const FIXTURES_DIR = resolve(import.meta.dirname, "../fixtures");
@@ -39,6 +39,10 @@ async function buildFixture(fixtureDir: string, pluginOptions = {}) {
     },
   });
 }
+
+beforeEach(() => {
+  rmSync(FIXTURES_DIR, { recursive: true, force: true });
+});
 
 afterEach(() => {
   rmSync(FIXTURES_DIR, { recursive: true, force: true });

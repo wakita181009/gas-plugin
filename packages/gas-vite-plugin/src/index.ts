@@ -15,6 +15,7 @@ export default function gasPlugin(options: GasPluginOptions = {}): Plugin {
   const { manifest = "src/appsscript.json" } = options;
 
   let rootDir = process.cwd();
+  let outDir = "dist";
 
   return {
     name: "gas-vite-plugin",
@@ -42,6 +43,7 @@ export default function gasPlugin(options: GasPluginOptions = {}): Plugin {
 
     configResolved(config) {
       rootDir = config.root;
+      outDir = config.build.outDir;
     },
 
     generateBundle(_, bundle) {
@@ -57,7 +59,7 @@ export default function gasPlugin(options: GasPluginOptions = {}): Plugin {
 
     closeBundle() {
       const src = resolve(rootDir, manifest);
-      const dest = resolve(rootDir, "dist", "appsscript.json");
+      const dest = resolve(rootDir, outDir, "appsscript.json");
 
       if (existsSync(src)) {
         copyFileSync(src, dest);

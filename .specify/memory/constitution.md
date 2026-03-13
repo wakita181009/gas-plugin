@@ -20,9 +20,10 @@ All output targets the GAS V8 runtime. No legacy transforms, no ES5 downleveling
 The plugin is a well-behaved Vite plugin that follows Vite's plugin API conventions:
 
 - Uses `enforce: "post"` and `apply: "build"` — only runs during build, after other plugins
-- Uses `config` hook to set sensible defaults (`minify: false`, code-splitting disabled for GAS)
-- Uses `transform` hook for tree-shake protection injection (`globals` feature)
-- Uses `generateBundle` for post-processing (export stripping, injection cleanup)
+- Uses `config` hook to set sensible defaults (`minify: false`, code-splitting conditionally disabled — skipped in lib mode)
+- Uses `configResolved` hook to capture resolved `root` and `outDir`
+- Uses `transform` hook for tree-shake protection injection (`globals` feature); skips virtual modules (`\0` prefix) and non-JS/TS files
+- Uses `generateBundle` for post-processing (export stripping, injection cleanup, trailing newline normalization)
 - Uses `closeBundle` for file operations (manifest copy, `include` file copy)
 - Peer dependency: `vite >=5.0.0` (supports Vite 5, 6, 7, 8+)
 - Vite 8+: uses `rolldownOptions` (not deprecated `rollupOptions`)
@@ -36,27 +37,33 @@ The plugin itself ships as both ESM (`dist/index.js`) and CJS (`dist/index.cjs`)
 - `transforms.ts` and `include.ts` enforce **100% coverage** across statements, branches, functions, and lines
 - Unit tests (`tests/*.test.ts`) validate pure functions in isolation, mirroring `src/` structure
 - Integration tests (`tests/integration/`) run real Vite builds against fixture projects and assert on actual output
-- Fixtures are created and torn down per test — no shared mutable state
+- Shared test infrastructure in `tests/integration/helpers.ts`: `createTestContext(fixturesDir)` factory provides `createFixture`, `readOutput`, `buildFixture`, and `cleanup` functions
 - Each integration test file uses its own fixtures directory to prevent cross-test interference
+- Fixtures are created and torn down per test via `beforeEach`/`afterEach` calling `cleanup`
+- `webapp.test.ts` builds against the real `apps/gas-webapp` directory with `configFile: false` to avoid loading its `vite.config.ts` (which imports the plugin by package name and fails when `dist/` is not built)
 
 ### VI. Strict Code Quality via Biome
 
 Biome enforces lint + format with strict rules:
 
-- `noFloatingPromises`, `noMisusedPromises`, `noNestedPromises` — async safety
-- `noUnusedImports`, `noUnusedVariables` — no dead code
-- `noBarrelFile`, `noReExportAll` — explicit exports only (except where `biome-ignore` is justified)
-- `useNamingConvention` — camelCase/PascalCase for functions, CONSTANT_CASE allowed for const
-- `noConsole: warn` — console usage requires explicit `biome-ignore` justification
-- Formatter: 2-space indent, double quotes, trailing commas, semicolons always
+- **Async safety**: `noFloatingPromises`, `noMisusedPromises`, `noNestedPromises`, `useAwait`
+- **No dead code**: `noUnusedImports`, `noUnusedVariables`, `noUnusedFunctionParameters`
+- **Explicit exports**: `noBarrelFile`, `noReExportAll` (except where `biome-ignore` is justified)
+- **Style discipline**: `noCommonJs`, `noNonNullAssertion`, `noParameterAssign`, `noEvolvingTypes`, `noVoid`, `useNamingConvention` (camelCase/PascalCase for functions, CONSTANT_CASE allowed for const)
+- **Complexity**: `noExcessiveCognitiveComplexity`
+- **Console**: `noConsole: warn` — console usage requires explicit `biome-ignore` justification
+- **Import ordering**: `organizeImports` assist enabled — type imports sort before value imports
+- **Formatter**: 2-space indent, double quotes, trailing commas, semicolons always, `arrowParentheses: always`, `lineWidth: 100`
 
 ## Project Structure
 
 - **Monorepo**: pnpm workspace (`packages/*`, `apps/*`)
 - **Package manager**: pnpm 10.x (corepack-managed via `packageManager` field)
 - **TypeScript**: ES2022 target, bundler module resolution, strict mode
+- **Type definitions**: `@types/node` in `packages/gas-vite-plugin` devDependencies; `@types/google-apps-script` in `apps/gas-webapp` devDependencies
 - **Build**: Vite library mode (entry: `src/index.ts`) with `vite-plugin-dts` for type generation
 - **External**: `vite`, `node:fs`, `node:path`, `node:fs/promises`, `tinyglobby` are externalized — not bundled
+- **Test apps**: `apps/gas-script` (basic GAS project), `apps/gas-webapp` (GAS web app with doGet + HTML; has its own `tsconfig.json` with `types: ["google-apps-script"]`)
 - **CI**: GitHub Actions — lint, test (Node 20/22/24), build, release on tag push
 
 ## Architecture Constraints
@@ -86,4 +93,4 @@ These are intentional omissions, not TODOs:
 - New plugin options require documentation in the `GasPluginOptions` interface JSDoc
 - Breaking changes to the public API require a major version bump
 
-**Version**: 2.0.0 | **Ratified**: 2026-03-13 | **Last Amended**: 2026-03-13
+**Version**: 2.1.0 | **Ratified**: 2026-03-13 | **Last Amended**: 2026-03-14

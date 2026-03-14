@@ -10,8 +10,8 @@ import { removeExportBlocks, stripExportKeywords } from "./core/transforms.js";
 import type { GasPluginOptions, WebpackCompiler } from "./core/types.js";
 import { extractFirstInput, findRootDir, processBundle } from "./core/utils.js";
 
-export { postProcessBundle, removeExportBlocks, stripExportKeywords };
 export type { GasPluginOptions };
+export { postProcessBundle, removeExportBlocks, stripExportKeywords };
 
 const GLOBALS_MARKER = "/* __GAS_GLOBALS__ */";
 const PLUGIN_NAME = "@gas-plugin/unplugin";

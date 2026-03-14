@@ -102,7 +102,7 @@ export default function gasPlugin(options: GasPluginOptions = {}): Plugin {
   };
 }
 
-export { gasPlugin };
 // biome-ignore lint/performance/noBarrelFile: Plugin re-exports transforms and types for consumers
 export { removeExportBlocks, stripExportKeywords } from "./transforms.js";
 export type { GasPluginOptions } from "./types.js";
+export { gasPlugin };

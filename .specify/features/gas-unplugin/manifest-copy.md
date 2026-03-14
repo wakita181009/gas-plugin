@@ -5,16 +5,9 @@
 - **Type**: command (build-time file operation)
 - **Purpose**: Copy `appsscript.json` manifest to the output directory so `clasp push` can deploy the project
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 003-unplugin-migration (archived) | FR-003 |
-| 001-gas-vite-plugin-v01 (archived) | US2, FR-004, FR-013 |
-
 ## Business Rules
 
-1. The manifest source path defaults to `"src/appsscript.json"` and is resolved relative to the detected root directory.
+1. The manifest source path defaults to `"appsscript.json"` and is resolved relative to the detected root directory.
 2. The destination is always `<outDir>/appsscript.json`.
 3. If the source file does not exist, a warning is emitted via `console.warn` — the build does not fail.
 4. Copy runs during finalization: Vite `closeBundle`, Rollup `closeBundle`, webpack `afterEmit`, or `writeBundle` fallback (esbuild/Bun).
@@ -71,6 +64,6 @@
 
 ## Change Impact
 
-- Changing the default manifest path is a breaking change for users relying on `src/appsscript.json`.
+- Changing the default manifest path is a breaking change for users relying on `appsscript.json`.
 - Changing `copyFiles()` affects both manifest copy and include copy.
 - Root directory detection differs per bundler — changes to `findRootDir` affect Rollup and esbuild.

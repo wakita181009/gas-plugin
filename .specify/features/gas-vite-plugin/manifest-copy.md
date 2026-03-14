@@ -5,13 +5,6 @@
 - **Type**: command (build-time file operation)
 - **Purpose**: Copy `appsscript.json` to the output directory so `clasp push` can deploy both code and manifest together
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 001-gas-vite-plugin-v01 (archived) | User Story 2, FR-004, FR-013 |
-| 002-gas-vite-plugin-v02 (archived) | FR-010 (include must not affect manifest copy) |
-
 ## Business Rules
 
 1. After the bundle is written, copy `appsscript.json` from the configured source path to `dist/appsscript.json`.

@@ -25,7 +25,7 @@
 | `TemplateDefinition` | `packages/cli/src/core/types.ts` | Template metadata: id, label, description, sourceDir, oauthScopes, globals, hasHtml |
 | `BundlerConfig` | `packages/cli/src/core/types.ts` | Bundler metadata: id, label, configFile, importPath, buildCommand, devDependencies |
 | `RenderContext` | `packages/cli/src/core/types.ts` | String substitution context: projectName, bundlerConfigFile, bundlerImport, buildCommand, oauthScopes, globals, year, plus optional template-specific keys |
-| `TemplateId` | `packages/cli/src/core/types.ts` | `"basic" \| "webapp" \| "library"` |
+| `TemplateId` | `packages/cli/src/core/types.ts` | `"basic" \| "webapp"` |
 | `BundlerId` | `packages/cli/src/core/types.ts` | `"vite" \| "rollup" \| "esbuild" \| "webpack"` |
 | `PackageManager` | `packages/cli/src/core/types.ts` | `"npm" \| "pnpm" \| "yarn" \| "bun"` |
 
@@ -35,9 +35,8 @@ The CLI generates the following files in the target directory:
 
 | File | Source |
 |------|--------|
-| `src/index.ts` | Template-specific (basic/webapp/library) |
+| `src/index.ts` | Template-specific (basic/webapp) |
 | `src/utils.ts` | Template-specific (basic/webapp) |
-| `src/types.ts` | Template-specific (library only) |
 | `src/client.html` | Template-specific (webapp only) |
 | `tsconfig.json` | Shared template |
 | `biome.json` | Shared template (from `biome.json.tmpl`) |
@@ -81,7 +80,7 @@ The CLI generates the following files in the target directory:
 | Template registry unit tests (15 tests) | `packages/cli/tests/core/templates.test.ts` |
 | PM detection unit tests (5 tests) | `packages/cli/tests/core/detect.test.ts` |
 | Git init unit tests (3 tests) | `packages/cli/tests/core/git.test.ts` |
-| Integration tests — basic+vite, webapp, library, clasp (19 tests) | `packages/cli/tests/integration/create.test.ts` |
+| Integration tests — basic+vite, webapp, clasp (19 tests) | `packages/cli/tests/integration/create.test.ts` |
 
 ## Change Impact
 

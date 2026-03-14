@@ -5,13 +5,6 @@
 - **Type**: command
 - **Purpose**: Allow developers to select their preferred bundler during scaffolding; generate the correct bundler config with `@gas-plugin/unplugin/*` import.
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| `.specify/specs/004-gas-cli/spec.md` | User Story 2 — Choose a Bundler (P1) |
-| `.specify/specs/004-gas-cli/spec.md` | FR-005, FR-007 |
-
 ## Business Rules
 
 1. Four bundlers are supported: vite, rollup, esbuild, webpack.

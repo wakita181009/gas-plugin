@@ -5,14 +5,6 @@
 - **Type**: command (build-time output transformation)
 - **Purpose**: Remove all ES module export syntax from bundled output so GAS can execute the code
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 003-unplugin-migration (archived) | FR-002 |
-| 001-gas-vite-plugin-v01 (archived) | US1, FR-001–003 |
-| 002-gas-vite-plugin-v02 (archived) | US4, FR-004–008 |
-
 ## Business Rules
 
 1. `stripExportKeywords()` removes inline `export` from declarations: `function`, `async function`, `const`, `let`, `var`, `class`, `abstract class`.

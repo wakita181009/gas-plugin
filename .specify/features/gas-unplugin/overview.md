@@ -23,7 +23,7 @@ Scope boundary: post-bundle transformations, tree-shake protection, file copying
 ## Value Objects and Validation
 
 - **`GasPluginOptions`** (defined in `src/core/types.ts`):
-  - `manifest?: string` — path to `appsscript.json`, defaults to `"src/appsscript.json"`.
+  - `manifest?: string` — path to `appsscript.json`, defaults to `"appsscript.json"`.
   - `include?: string[]` — glob patterns for additional files to copy flat to output, defaults to `[]`.
   - `globals?: string[]` — function names to protect from tree-shaking, defaults to `[]`.
   - `autoGlobals?: boolean` — auto-detect exported functions for tree-shake protection, defaults to `true`.
@@ -57,7 +57,7 @@ Plugin Init
 | `dist/Code.js` | Bundled GAS output (transforms applied) |
 | `dist/appsscript.json` | Copied manifest for `clasp push` |
 | `dist/*.html`, `dist/*.css`, etc. | Additional files copied via `include` |
-| `src/appsscript.json` | Default manifest source location |
+| `appsscript.json` | Default manifest source location (relative to root) |
 
 ## Code Entry Points
 

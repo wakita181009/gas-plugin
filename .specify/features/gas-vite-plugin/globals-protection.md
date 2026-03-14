@@ -5,12 +5,6 @@
 - **Type**: command (build-time tree-shake protection)
 - **Purpose**: Prevent designated functions from being tree-shaken by the bundler, ensuring they remain as top-level declarations callable by GAS
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 002-gas-vite-plugin-v02 (archived) | User Story 2 (globals), User Story 3 (autoGlobals), FR-002, FR-003 |
-
 ## Business Rules
 
 1. The `globals` option lists function names to explicitly protect from tree-shaking. These functions are kept as top-level declarations even if not exported or used.

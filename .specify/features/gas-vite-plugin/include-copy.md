@@ -5,12 +5,6 @@
 - **Type**: command (build-time file operation)
 - **Purpose**: Copy additional files (HTML, CSS, images, etc.) flat to the output directory for GAS web app deployment via `HtmlService.createHtmlOutputFromFile()`
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 002-gas-vite-plugin-v02 (archived) | User Story 1, FR-001, FR-009, FR-010 |
-
 ## Business Rules
 
 1. When `include` patterns are specified, resolve them via `tinyglobby` relative to Vite's `root`.

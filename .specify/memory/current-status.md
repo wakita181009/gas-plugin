@@ -16,6 +16,7 @@
 - `@gas-plugin/cli`: Root `pnpm test` script does not yet include CLI tests (only runs gas-vite-plugin). CLI tests must be run separately via `pnpm --filter @gas-plugin/cli test`.
 - `@gas-plugin/cli`: Project name sanitization for npm naming rules not yet implemented (FR edge case).
 - `@gas-plugin/cli`: Existing `appsscript.json` detection/warning in target directory not yet implemented (FR edge case).
+- `@gas-plugin/cli`: `library` template specified in original spec (US3) has not been implemented — only `basic` and `webapp` templates exist.
 
 ## Deferred Work
 
@@ -32,4 +33,4 @@
 - v0.1 (spec `001-gas-vite-plugin-v01`): Export stripping, manifest copy, build defaults — all implemented and tested.
 - v0.2 (spec `002-gas-vite-plugin-v02`): Include copy, globals/autoGlobals protection, export edge cases, web app test app — all implemented and tested.
 - v0.0.5 (spec `003-unplugin-migration`): Universal bundler plugin via unplugin v3. Core features (export stripping, manifest copy, include copy, globals protection, build defaults) ported to multi-bundler architecture. Vite 5–8+ compatibility. Unmatched globals warning added. Integration tests for Vite, Rollup, esbuild. Subpath exports for all 5 bundlers. Coverage: core 100%, overall 80%+.
-- v0.1.0 (spec `004-gas-cli`): `@gas-plugin/cli` with `create` subcommand. 3 templates (basic, webapp, library) × 4 bundlers (vite, rollup, esbuild, webpack). Interactive + non-interactive modes. clasp integration opt-in. Package manager auto-detection. 50 tests passing, 94%+ coverage on core modules. All 56 tasks completed.
+- v0.1.0 (spec `004-gas-cli`): `@gas-plugin/cli` with `create` subcommand. 2 templates (basic, webapp) × 4 bundlers (vite, rollup, esbuild, webpack). Interactive + non-interactive modes. clasp integration opt-in. Package manager auto-detection. 50 tests passing, 94%+ coverage on core modules.

@@ -5,12 +5,6 @@
 - **Type**: {command | query | event | lifecycle}
 - **Purpose**: {One-line description}
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| `.specify/specs/{id}/spec.md` | {section reference} |
-
 ## Business Rules
 
 1. {Rule}

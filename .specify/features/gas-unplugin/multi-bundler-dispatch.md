@@ -5,13 +5,6 @@
 - **Type**: lifecycle (cross-cutting build orchestration)
 - **Purpose**: Route plugin hooks to the correct framework-specific implementation and prevent double processing across bundler boundaries
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 003-unplugin-migration (archived) | FR-001, FR-008, US1–US7 |
-| `.specify/memory/design-decisions.md` | Two-tier hook strategy (003-D1), Export stripping per bundler (003-D2), Root/outDir resolution (003-D3) |
-
 ## Business Rules
 
 1. The plugin uses unplugin v3 `createUnplugin` to create a single factory that exposes `.vite`, `.rollup`, `.webpack`, `.esbuild`, `.bun` adapters.

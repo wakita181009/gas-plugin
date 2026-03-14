@@ -5,13 +5,6 @@
 - **Type**: command (build-time file operation)
 - **Purpose**: Copy additional files (matched by glob patterns) flat into the output directory for GAS `HtmlService` and other file-based APIs
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 003-unplugin-migration (archived) | FR-004 |
-| 002-gas-vite-plugin-v02 (archived) | US1, FR-001, FR-009, FR-010 |
-
 ## Business Rules
 
 1. The `include` option accepts an array of glob patterns resolved relative to the root directory via `tinyglobby`.

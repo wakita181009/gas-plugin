@@ -5,13 +5,6 @@
 - **Type**: command
 - **Purpose**: Generate a fully configured, buildable GAS project from templates and user options.
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| `.specify/specs/004-gas-cli/spec.md` | User Story 1 — Create a New GAS Project from Template (P1) |
-| `.specify/specs/004-gas-cli/spec.md` | FR-001, FR-002, FR-006, FR-007, FR-008, FR-009, FR-009a, FR-013, FR-016, FR-018 |
-
 ## Business Rules
 
 1. A project directory is created at `<cwd>/<projectName>`.

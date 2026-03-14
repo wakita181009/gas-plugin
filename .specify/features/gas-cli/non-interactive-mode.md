@@ -5,13 +5,6 @@
 - **Type**: command
 - **Purpose**: Allow scaffolding via CLI flags without interactive prompts, enabling automation and CI/CD usage.
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| `.specify/specs/004-gas-cli/spec.md` | User Story 4 — Non-Interactive Mode (P2) |
-| `.specify/specs/004-gas-cli/spec.md` | FR-003, FR-011, FR-017 |
-
 ## Business Rules
 
 1. All options can be passed as CLI flags: `--template`, `--bundler`, `--install`/`--no-install`, `--clasp`, `--script-id`, `--force`, `--yes`.

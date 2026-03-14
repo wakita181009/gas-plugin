@@ -5,13 +5,6 @@
 - **Type**: command
 - **Purpose**: Optionally generate clasp configuration files and deploy scripts during scaffolding for Google Apps Script deployment.
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| `.specify/specs/004-gas-cli/spec.md` | User Story 5 — clasp Integration Setup (P3) |
-| `.specify/specs/004-gas-cli/spec.md` | FR-012 |
-
 ## Business Rules
 
 1. clasp integration is opt-in (default: disabled).

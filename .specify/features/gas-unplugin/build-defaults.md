@@ -5,13 +5,6 @@
 - **Type**: command (build-time configuration)
 - **Purpose**: Apply GAS-compatible build defaults so projects work without manual configuration
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 003-unplugin-migration (archived) | FR-010 |
-| 001-gas-vite-plugin-v01 (archived) | US3, FR-005, FR-006 |
-
 ## Business Rules
 
 1. `build.minify` is set to `false` by default. GAS output must be human-readable. User-specified `minify` value takes precedence.

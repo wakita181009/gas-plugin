@@ -1,6 +1,9 @@
-# @gas-plugin/unplugin
+# @gas-plugin
 
-A universal bundler plugin for Google Apps Script (GAS) projects. Supports Vite, Rollup, webpack, esbuild, and Bun via [unplugin](https://github.com/unjs/unplugin).
+A monorepo for Google Apps Script (GAS) bundler tooling.
+
+- **@gas-plugin/unplugin** — Universal bundler plugin (Vite, Rollup, webpack, esbuild, Bun) via [unplugin](https://github.com/unjs/unplugin)
+- **@gas-plugin/cli** — Scaffolding CLI (`npx @gas-plugin/cli create`)
 
 ## Design Principles & Architecture
 
@@ -26,22 +29,30 @@ packages/
         types.ts        # GasPluginOptions interface
         utils.ts        # Shared utilities (input extraction, root detection)
     tests/
+      core/             # Unit tests for each core module
+      exports.test.ts   # Package export validation
+      integration/      # Vite, Rollup, esbuild integration tests
+  cli/                  # @gas-plugin/cli (published to npm)
+    src/
+      index.ts          # citty CLI entrypoint
+      commands/
+        create.ts       # create subcommand (interactive + non-interactive)
       core/
-        transforms.test.ts     # Unit tests for transforms
-        post-process.test.ts   # Unit tests for post-processing
-        include.test.ts        # Unit tests for include/copy
-        globals.test.ts        # Unit tests for globals detection
-        utils.test.ts          # Unit tests for utilities
-      exports.test.ts          # Package export validation
-      integration/
-        helpers.ts             # Shared test helpers
-        vite.test.ts           # Vite integration tests
-        rollup.test.ts         # Rollup integration tests
-        esbuild.test.ts        # esbuild integration tests
+        scaffold.ts     # Scaffolding pipeline orchestrator
+        render.ts       # {{placeholder}} template engine
+        templates.ts    # Template/bundler registries
+        detect.ts       # Package manager detection
+        git.ts          # Git initialization
+        types.ts        # Type definitions
+      templates/        # Project templates (basic, webapp, bundler-configs, shared)
+    tests/
+      core/             # Unit tests
+      integration/      # E2E scaffold tests
   gas-vite-plugin/      # Legacy Vite-only plugin (deprecated)
 apps/
   gas-script/           # Test app: basic GAS project
   gas-webapp/           # Test app: GAS web app (doGet + HTML)
+e2e/                    # End-to-end tests (120s timeout)
 ```
 
 ## Commands
@@ -50,6 +61,7 @@ apps/
 pnpm install          # Install dependencies
 pnpm build            # Build all packages
 pnpm test             # Run tests
+pnpm test:e2e         # Run E2E tests
 pnpm -w run check     # Lint & format check with Biome
 ```
 
@@ -61,17 +73,12 @@ pnpm -w run check     # Lint & format check with Biome
 pnpm -r exec -- npm version <ver> --no-git-tag-version
 ```
 
-`gas-vite-plugin` (deprecated) is also updated but that is fine.
-
 ## Code Style
 
 TypeScript 5.x (compiled via Vite/oxc): Follow standard conventions. See `biome.json` for lint/format rules.
 
 ## Active Technologies
+
 - TypeScript 5.x, ES2022 target, Node.js 20+
 - `unplugin` (universal bundler plugin framework), `tinyglobby` (glob resolution)
-- TypeScript 5.x, ES2022 target, Node.js 20+ + `citty` ^0.2.1 (CLI framework, subcommand routing), `@clack/prompts` ^1.1.0 (interactive prompts) (004-gas-cli)
-- N/A (file-system only — template copy + string substitution) (004-gas-cli)
-
-## Recent Changes
-- 004-gas-cli: Added TypeScript 5.x, ES2022 target, Node.js 20+ + `citty` ^0.2.1 (CLI framework, subcommand routing), `@clack/prompts` ^1.1.0 (interactive prompts)
+- `citty` (CLI framework, subcommand routing), `@clack/prompts` (interactive prompts)

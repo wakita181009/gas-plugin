@@ -5,12 +5,6 @@
 - **Type**: command (build-time configuration)
 - **Purpose**: Apply GAS-compatible Vite build defaults so projects work without manual configuration
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 001-gas-vite-plugin-v01 (archived) | User Story 3, FR-005, FR-006 |
-
 ## Business Rules
 
 1. `build.minify` is set to `false` by default. GAS output must be human-readable.

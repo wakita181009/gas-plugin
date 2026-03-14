@@ -6,7 +6,7 @@
 |-------------|-------------|-------------|
 | gas-vite-plugin | `.specify/features/gas-vite-plugin/overview.md` | (Legacy) Vite-only plugin that transforms ES module output into GAS-compatible flat files |
 | gas-unplugin | `.specify/features/gas-unplugin/overview.md` | Universal bundler plugin (unplugin v3) for GAS projects — supports Vite, Rollup, webpack, esbuild, Bun |
-| gas-cli | `.specify/features/gas-cli/overview.md` | Extensible CLI tool for scaffolding GAS projects — 3 templates × 4 bundlers, interactive + non-interactive modes, clasp integration |
+| gas-cli | `.specify/features/gas-cli/overview.md` | Extensible CLI tool for scaffolding GAS projects — 2 templates (basic, webapp) × 4 bundlers, interactive + non-interactive modes, clasp integration |
 
 ## Use Cases
 
@@ -147,14 +147,3 @@
 | non-interactive | gas-cli non-interactive-mode |
 | --yes flag | gas-cli non-interactive-mode |
 | --force flag | gas-cli non-interactive-mode |
-
-## Spec Traceability
-
-Specs 001–003 have been archived (available in git history). Design decisions consolidated in `.specify/memory/design-decisions.md`.
-
-| Spec (archived) | Feature Docs |
-|------|-------------|
-| 001-gas-vite-plugin-v01 | (legacy) gas-vite-plugin: overview, export-stripping, manifest-copy, build-defaults |
-| 002-gas-vite-plugin-v02 | (legacy) gas-vite-plugin: include-copy, globals-protection, export-stripping |
-| 003-unplugin-migration | gas-unplugin: all use cases (multi-bundler-dispatch, export-stripping, manifest-copy, include-copy, globals-protection, build-defaults) |
-| 004-gas-cli | gas-cli: all use cases (scaffold-project, choose-bundler, choose-template, non-interactive-mode, clasp-integration) |

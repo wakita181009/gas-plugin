@@ -5,13 +5,6 @@
 - **Type**: command (build-time transformation)
 - **Purpose**: Remove all ES module export syntax from bundled output so GAS can parse the code
 
-## Spec Traceability
-
-| Spec | Section |
-|------|---------|
-| 001-gas-vite-plugin-v01 (archived) | User Story 1, FR-001 through FR-003, FR-010, FR-012, FR-014 |
-| 002-gas-vite-plugin-v02 (archived) | User Story 4, FR-004 through FR-008 |
-
 ## Business Rules
 
 1. `export function`, `export async function`, `export const`, `export let`, `export var`, `export class`, `export abstract class` at the start of a line must have the `export` keyword removed.

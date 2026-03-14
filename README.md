@@ -6,10 +6,14 @@ Tooling for Google Apps Script projects — scaffold a new project in seconds an
 
 ```bash
 # Scaffold a new project
-npx @gas-plugin/cli create
+npx @gas-plugin/cli create          # npm
+yarn dlx @gas-plugin/cli create     # yarn
+pnpm dlx @gas-plugin/cli create     # pnpm
 
 # Or install the bundler plugin directly
-npm install -D @gas-plugin/unplugin
+npm install -D @gas-plugin/unplugin   # npm
+yarn add -D @gas-plugin/unplugin      # yarn
+pnpm add -D @gas-plugin/unplugin      # pnpm
 ```
 
 ```typescript

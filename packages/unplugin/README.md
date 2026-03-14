@@ -15,8 +15,13 @@ Google Apps Script requires plain top-level function declarations — no `export
 ## Install
 
 ```bash
+# npm
 npm install -D @gas-plugin/unplugin
-# or
+
+# yarn
+yarn add -D @gas-plugin/unplugin
+
+# pnpm
 pnpm add -D @gas-plugin/unplugin
 ```
 

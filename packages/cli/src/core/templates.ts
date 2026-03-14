@@ -83,6 +83,14 @@ export const BUNDLERS: BundlerConfig[] = [
     devDependencies: pickDeps("webpack", "webpack-cli", "ts-loader", "@gas-plugin/unplugin"),
     buildCommand: "webpack",
   },
+  {
+    id: "bun",
+    label: "Bun",
+    configFile: "bun.build.ts",
+    importPath: "@gas-plugin/unplugin/bun",
+    devDependencies: pickDeps("@gas-plugin/unplugin"),
+    buildCommand: "bun run bun.build.ts",
+  },
 ];
 
 export function getTemplate(id: TemplateId): TemplateDefinition | undefined {

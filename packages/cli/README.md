@@ -5,10 +5,19 @@ Extensible CLI tool for scaffolding Google Apps Script projects. Generates a rea
 ## Quick Start
 
 ```bash
+# npm
 npx @gas-plugin/cli create
+
+# yarn
+yarn dlx @gas-plugin/cli create
+
+# pnpm
+pnpm dlx @gas-plugin/cli create
 ```
 
 Follow the interactive prompts to choose a project name, template, and bundler.
+
+> **Note:** The CLI automatically detects which package manager you used to run it and uses the same one for dependency installation and "Next steps" output.
 
 ## Usage
 
@@ -27,7 +36,8 @@ npx @gas-plugin/cli create my-project
 ```
 
 ```bash
-npx @gas-plugin/cli create my-app \
+# Example with pnpm
+pnpm dlx @gas-plugin/cli create my-app \
   --template webapp \
   --bundler vite \
   --clasp \
@@ -40,7 +50,7 @@ npx @gas-plugin/cli create my-app \
 |--------|-------|------|---------|-------------|
 | `name` | | positional | — | Project name (prompted if omitted) |
 | `--template` | `-t` | `basic` \| `webapp` | `basic` | Project template |
-| `--bundler` | `-b` | `vite` \| `rollup` \| `esbuild` \| `webpack` | `vite` | Bundler to use |
+| `--bundler` | `-b` | `vite` \| `rollup` \| `esbuild` \| `webpack` \| `bun` | `vite` | Bundler to use |
 | `--install` | | boolean | `true` | Install dependencies after scaffolding |
 | `--clasp` | | boolean | `true` | Include `.clasp.json` and `.claspignore` |
 | `--script-id` | | string | — | GAS Script ID for `.clasp.json` (requires `--clasp`) |
@@ -97,6 +107,7 @@ my-project/
 | Rollup | `rollup.config.mjs` | `rollup -c` |
 | esbuild | `esbuild.config.mjs` | `node esbuild.config.mjs` |
 | webpack | `webpack.config.mjs` | `webpack` |
+| Bun | `bun.build.ts` | `bun run bun.build.ts` |
 
 All bundler configs use [`@gas-plugin/unplugin`](../unplugin/) under the hood.
 

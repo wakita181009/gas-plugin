@@ -58,8 +58,8 @@ describe("BIOME_VERSION", () => {
 });
 
 describe("BUNDLERS registry", () => {
-  it("has 4 bundlers", () => {
-    expect(BUNDLERS).toHaveLength(4);
+  it("has 5 bundlers", () => {
+    expect(BUNDLERS).toHaveLength(5);
   });
 
   it("all bundlers have required fields", () => {
@@ -80,6 +80,7 @@ describe("getBundler", () => {
     expect(getBundler("rollup")?.configFile).toBe("rollup.config.mjs");
     expect(getBundler("esbuild")?.configFile).toBe("esbuild.config.mjs");
     expect(getBundler("webpack")?.configFile).toBe("webpack.config.mjs");
+    expect(getBundler("bun")?.configFile).toBe("bun.build.ts");
   });
 
   it("returns undefined for invalid id", () => {

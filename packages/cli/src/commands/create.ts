@@ -124,7 +124,7 @@ export default defineCommand({
     bundler: {
       type: "string",
       alias: "b",
-      description: "Bundler: vite | rollup | esbuild | webpack",
+      description: "Bundler: vite | rollup | esbuild | webpack | bun",
     },
     install: {
       type: "boolean",

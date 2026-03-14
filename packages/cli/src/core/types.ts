@@ -11,7 +11,7 @@ export interface ScaffoldOptions {
 }
 
 export type TemplateId = "basic" | "webapp";
-export type BundlerId = "vite" | "rollup" | "esbuild" | "webpack";
+export type BundlerId = "vite" | "rollup" | "esbuild" | "webpack" | "bun";
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
 
 /** Metadata for a project template in the registry. */

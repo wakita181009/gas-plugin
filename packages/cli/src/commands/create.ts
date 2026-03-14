@@ -1,3 +1,4 @@
+import { existsSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import * as p from "@clack/prompts";
 import { defineCommand } from "citty";
@@ -19,6 +20,9 @@ async function resolveProjectName(name: string | undefined, useDefaults: boolean
     placeholder: "my-gas-app",
     validate: (value) => {
       if (!value) return "Project name is required";
+      if (!/^[a-z0-9][a-z0-9._-]*$/.test(value)) {
+        return "Must start with a lowercase letter or number and contain only lowercase letters, numbers, hyphens, dots, or underscores";
+      }
     },
   });
   if (p.isCancel(result)) cancelAndExit();
@@ -87,7 +91,6 @@ async function checkTargetDir(
   force: boolean,
   useDefaults: boolean,
 ): Promise<void> {
-  const { existsSync, readdirSync } = await import("node:fs");
   if (!existsSync(targetDir) || readdirSync(targetDir).length === 0) return;
   if (force) return;
   if (useDefaults) {

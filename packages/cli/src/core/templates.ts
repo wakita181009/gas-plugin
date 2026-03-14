@@ -4,6 +4,11 @@ import type { BundlerConfig, BundlerId, TemplateDefinition, TemplateId } from ".
 
 const deps = cliPkg.devDependencies as Record<string, string>;
 
+/** Strip semver range prefixes (^, ~, >=, etc.) to get the bare version. */
+function stripRange(version: string): string {
+  return version.replace(/^[^\d]*/, "");
+}
+
 /** Pick specific keys from the CLI devDependencies, replacing workspace: protocol with latest. */
 function pickDeps(...keys: string[]): Record<string, string> {
   const result: Record<string, string> = {};
@@ -16,6 +21,9 @@ function pickDeps(...keys: string[]): Record<string, string> {
   }
   return result;
 }
+
+/** Bare biome version for $schema URL (e.g. "2.4.7"). */
+export const BIOME_VERSION = stripRange(deps["@biomejs/biome"] ?? "2.4.7");
 
 export const TEMPLATES: TemplateDefinition[] = [
   {

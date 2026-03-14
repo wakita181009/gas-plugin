@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import cliPkg from "../../package.json" with { type: "json" };
 import { initGit } from "./git.js";
 import { renderFile } from "./render.js";
-import { getBundler, getTemplate } from "./templates.js";
+import { BIOME_VERSION, getBundler, getTemplate } from "./templates.js";
 import type { RenderContext, ScaffoldOptions } from "./types.js";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
@@ -130,6 +130,25 @@ src/
   await writeFile(join(destDir, ".claspignore"), claspIgnore, "utf-8");
 }
 
+/** Generate biome.json with schema version derived from package.json. */
+async function generateBiomeConfig(destDir: string): Promise<void> {
+  const biome = {
+    $schema: `https://biomejs.dev/schemas/${BIOME_VERSION}/schema.json`,
+    formatter: {
+      indentStyle: "space",
+      indentWidth: 2,
+      lineWidth: 100,
+    },
+    linter: {
+      enabled: true,
+      rules: {
+        recommended: true,
+      },
+    },
+  };
+  await writeFile(join(destDir, "biome.json"), `${JSON.stringify(biome, null, 2)}\n`, "utf-8");
+}
+
 /** Generate bundler config file for the selected bundler and template. */
 async function generateBundlerConfig(
   options: ScaffoldOptions,
@@ -176,6 +195,9 @@ export async function scaffold(options: ScaffoldOptions): Promise<void> {
       await copyTemplateDir(templateDir, targetDir, context);
     }
   }
+
+  // Generate biome.json (version from package.json)
+  await generateBiomeConfig(targetDir);
 
   // Generate package.json (programmatic, not from template)
   await generatePackageJson(options, targetDir);

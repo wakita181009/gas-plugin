@@ -41,6 +41,7 @@
     "citty": "^0.2.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.7",
     "@gas-plugin/unplugin": "workspace:*",
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/node": "^25.5.0",

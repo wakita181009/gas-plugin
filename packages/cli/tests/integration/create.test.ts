@@ -75,13 +75,16 @@ describe("scaffold - basic template + vite", () => {
     expect(existsSync(join(opts.targetDir, "tsconfig.json"))).toBe(true);
   });
 
-  it("generates biome.json", async () => {
+  it("generates biome.json with schema version from package.json", async () => {
     const opts = makeOptions(tempDir);
     await scaffold(opts);
-    expect(existsSync(join(opts.targetDir, "biome.json"))).toBe(true);
+    const biome = JSON.parse(readFileSync(join(opts.targetDir, "biome.json"), "utf-8"));
+    expect(biome.$schema).toMatch(/^https:\/\/biomejs\.dev\/schemas\/\d+\.\d+\.\d+\/schema\.json$/);
+    expect(biome.formatter.indentStyle).toBe("space");
+    expect(biome.linter.enabled).toBe(true);
   });
 
-  it("generates .gitignore (from _gitignore template)", async () => {
+  it("generates .gitignore", async () => {
     const opts = makeOptions(tempDir);
     await scaffold(opts);
     expect(existsSync(join(opts.targetDir, ".gitignore"))).toBe(true);

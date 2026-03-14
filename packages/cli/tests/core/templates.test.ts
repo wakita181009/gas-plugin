@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { BUNDLERS, getBundler, getTemplate, TEMPLATES } from "../../src/core/templates.js";
+import {
+  BIOME_VERSION,
+  BUNDLERS,
+  getBundler,
+  getTemplate,
+  TEMPLATES,
+} from "../../src/core/templates.js";
 
 describe("TEMPLATES registry", () => {
   it("has 3 templates", () => {
@@ -50,6 +56,12 @@ describe("getTemplate", () => {
   it("returns undefined for invalid id", () => {
     // biome-ignore lint/suspicious/noExplicitAny: testing invalid input
     expect(getTemplate("invalid" as any)).toBeUndefined();
+  });
+});
+
+describe("BIOME_VERSION", () => {
+  it("is a valid semver string", () => {
+    expect(BIOME_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
   });
 });
 

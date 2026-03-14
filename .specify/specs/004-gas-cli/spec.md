@@ -80,7 +80,7 @@ A developer or CI system wants to scaffold a project without interactive prompts
 
 **Acceptance Scenarios**:
 
-1. **Given** the developer runs the command with `--template basic --bundler vite --name my-gas-app`, **When** the command completes, **Then** a `my-gas-app` directory is created with the basic Vite template and no prompts were shown.
+1. **Given** the developer runs the command with `gas-plugin create my-gas-app --template basic --bundler vite`, **When** the command completes, **Then** a `my-gas-app` directory is created with the basic Vite template and no prompts were shown.
 2. **Given** the developer passes the `--yes` flag, **When** the command runs, **Then** all prompts use their default values.
 
 ---

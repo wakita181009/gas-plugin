@@ -1,5 +1,9 @@
 # @gas-plugin
 
+[![CI](https://github.com/wakita181009/gas-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/wakita181009/gas-plugin/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/wakita181009/gas-plugin/graph/badge.svg)](https://codecov.io/gh/wakita181009/gas-plugin)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Tooling for Google Apps Script projects — scaffold a new project in seconds and build with any bundler.
 
 ## Quick Start

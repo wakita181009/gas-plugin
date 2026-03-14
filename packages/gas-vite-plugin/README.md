@@ -70,7 +70,7 @@ npx clasp push
 
 ```typescript
 gasPlugin({
-  manifest: "src/appsscript.json", // Path to manifest (default)
+  manifest: "appsscript.json", // Path to manifest (default)
   include: ["src/**/*.html"],       // Copy additional files flat to dist
   globals: ["processData"],         // Protect functions from tree-shaking
   autoGlobals: true,                // Auto-protect exported functions (default)

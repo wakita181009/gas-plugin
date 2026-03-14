@@ -89,7 +89,6 @@ async function generateManifest(options: ScaffoldOptions, destDir: string): Prom
   if (!template) throw new Error(`Unknown template: ${options.template}`);
 
   const manifest: Record<string, unknown> = {
-    timeZone: "America/New_York",
     dependencies: {},
     exceptionLogging: "STACKDRIVER",
     runtimeVersion: "V8",

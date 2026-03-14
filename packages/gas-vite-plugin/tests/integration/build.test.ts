@@ -59,7 +59,7 @@ describe("US2: appsscript.json manifest handling", () => {
     const manifest = JSON.stringify({ timeZone: "Asia/Tokyo", runtimeVersion: "V8" });
     const dir = createFixture("manifest-default", {
       "src/main.ts": "export function onOpen() {}",
-      "src/appsscript.json": manifest,
+      "appsscript.json": manifest,
     });
 
     await buildFixture(dir);
@@ -72,10 +72,10 @@ describe("US2: appsscript.json manifest handling", () => {
     const manifest = JSON.stringify({ timeZone: "UTC", runtimeVersion: "V8" });
     const dir = createFixture("manifest-custom", {
       "src/main.ts": "export function onOpen() {}",
-      "appsscript.json": manifest,
+      "config/appsscript.json": manifest,
     });
 
-    await buildFixture(dir, { manifest: "appsscript.json" });
+    await buildFixture(dir, { manifest: "config/appsscript.json" });
 
     const copied = readFileSync(resolve(dir, "dist/appsscript.json"), "utf-8");
     expect(copied).toBe(manifest);

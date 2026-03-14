@@ -19,7 +19,7 @@ export function sayHello() {
   return "hello";
 }
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithRollup(dir);
@@ -34,7 +34,7 @@ export function sayHello() {
   it("copies appsscript.json manifest to output", async () => {
     const dir = createFixture("manifest", {
       "src/main.ts": `export function onOpen() {}`,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithRollup(dir);
@@ -52,7 +52,7 @@ function saveData(data) {
   console.log(data);
 }
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithRollup(dir, { globals: ["getData", "saveData"] });
@@ -68,7 +68,7 @@ function saveData(data) {
   it("copies include files to output", async () => {
     const dir = createFixture("include", {
       "src/main.ts": `export function doGet() { return "ok"; }`,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
       "src/index.html": "<html><body>Hello</body></html>",
     });
 
@@ -87,7 +87,7 @@ export function onEdit() {
   console.log("edit");
 }
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithRollup(dir, { autoGlobals: true });

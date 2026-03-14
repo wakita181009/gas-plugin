@@ -2,7 +2,7 @@ export interface GasPluginOptions {
   /**
    * Path to appsscript.json manifest file.
    * Resolved relative to Vite's `root`.
-   * @default "src/appsscript.json"
+   * @default "appsscript.json"
    */
   manifest?: string;
 

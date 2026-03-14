@@ -19,7 +19,7 @@ export function sayHello() {
   return "hello";
 }
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithVite(dir);
@@ -33,7 +33,7 @@ export function sayHello() {
   it("copies appsscript.json manifest to output", async () => {
     const dir = createFixture("manifest", {
       "src/main.ts": `export function onOpen() {}`,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithVite(dir);
@@ -53,7 +53,7 @@ function saveData(data: unknown) {
 
 export { getData };
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithVite(dir, { globals: ["getData", "saveData"] });
@@ -68,7 +68,7 @@ export { getData };
   it("copies include files to output", async () => {
     const dir = createFixture("include", {
       "src/main.ts": `export function doGet() { return "ok"; }`,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
       "src/index.html": "<html><body>Hello</body></html>",
     });
 
@@ -87,7 +87,7 @@ export function onEdit() {
   console.log("edit");
 }
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithVite(dir, { autoGlobals: true });
@@ -105,7 +105,7 @@ export default function doGet() {
   return "ok";
 }
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithVite(dir);
@@ -123,7 +123,7 @@ export function onOpen() {
   console.log(greeting);
 }
 `,
-      "src/appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
     });
 
     await buildWithVite(dir);

@@ -1,18 +1,18 @@
-# GAS Vite Plugin
+# @gas-plugin/unplugin
 
-A minimal Vite plugin for Google Apps Script projects.
+A universal bundler plugin for Google Apps Script projects.
 
-Write standard TypeScript with `export function` — the plugin strips exports, copies manifests, and protects functions from tree-shaking so your code runs on GAS as-is.
+Write standard TypeScript with `export function` — the plugin strips exports, copies manifests, and protects functions from tree-shaking so your code runs on GAS as-is. Works with **Vite**, **Rollup**, **webpack**, **esbuild**, and **Bun**.
 
 ## Quick Start
 
 ```bash
-npm install -D gas-vite-plugin vite
+npm install -D @gas-plugin/unplugin
 ```
 
 ```typescript
 // vite.config.ts
-import gasPlugin from "gas-vite-plugin";
+import gasPlugin from "@gas-plugin/unplugin/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -32,13 +32,14 @@ npx vite build
 npx clasp push
 ```
 
-See [`packages/gas-vite-plugin/README.md`](./packages/gas-vite-plugin/README.md) for full documentation and options.
+See [`packages/unplugin/README.md`](./packages/unplugin/README.md) for full documentation, all bundler examples, and options.
 
 ## Packages
 
 | Package | Description |
 |---------|-------------|
-| [`gas-vite-plugin`](./packages/gas-vite-plugin/) | The Vite plugin (published to npm) |
+| [`@gas-plugin/unplugin`](./packages/unplugin/) | Universal bundler plugin (Vite, Rollup, webpack, esbuild, Bun) |
+| [`gas-vite-plugin`](./packages/gas-vite-plugin/) | Legacy Vite-only plugin (deprecated) |
 
 ## Example Apps
 

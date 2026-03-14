@@ -1,6 +1,6 @@
-# GAS Vite Plugin
+# @gas-plugin/unplugin
 
-A minimal Vite plugin for Google Apps Script (GAS) projects.
+A universal bundler plugin for Google Apps Script (GAS) projects. Supports Vite, Rollup, webpack, esbuild, and Bun via [unplugin](https://github.com/unjs/unplugin).
 
 ## Design Principles & Architecture
 
@@ -10,24 +10,38 @@ See [`.specify/memory/constitution.md`](../.specify/memory/constitution.md) for 
 
 ```text
 packages/
-  gas-vite-plugin/    # The Vite plugin (published to npm)
+  unplugin/             # @gas-plugin/unplugin (published to npm)
     src/
-      index.ts        # Plugin factory + Vite hooks
-      transforms.ts   # Pure string transforms (export stripping)
-      include.ts      # Glob resolution + flat file copy
-      types.ts        # GasPluginOptions interface
+      index.ts          # unplugin factory + bundler-specific hooks
+      vite.ts           # Vite entry point
+      rollup.ts         # Rollup entry point
+      webpack.ts        # webpack entry point
+      esbuild.ts        # esbuild entry point
+      bun.ts            # Bun entry point
+      core/
+        transforms.ts   # Pure string transforms (export stripping)
+        post-process.ts # Bundle post-processing pipeline
+        include.ts      # Glob resolution + flat file copy
+        globals.ts      # Tree-shake protection detection
+        types.ts        # GasPluginOptions interface
+        utils.ts        # Shared utilities (input extraction, root detection)
     tests/
-      transforms.test.ts        # Unit tests (mirrors src/)
-      include.test.ts           # Unit tests (mirrors src/)
-      integration/              # Integration tests (real Vite builds)
-        build.test.ts           # v0.1 basic build tests
-        include.test.ts         # include option tests
-        globals.test.ts         # globals + autoGlobals tests
-        exports.test.ts         # export edge case tests
-        webapp.test.ts          # gas-webapp test app build
+      core/
+        transforms.test.ts     # Unit tests for transforms
+        post-process.test.ts   # Unit tests for post-processing
+        include.test.ts        # Unit tests for include/copy
+        globals.test.ts        # Unit tests for globals detection
+        utils.test.ts          # Unit tests for utilities
+      exports.test.ts          # Package export validation
+      integration/
+        helpers.ts             # Shared test helpers
+        vite.test.ts           # Vite integration tests
+        rollup.test.ts         # Rollup integration tests
+        esbuild.test.ts        # esbuild integration tests
+  gas-vite-plugin/      # Legacy Vite-only plugin (deprecated)
 apps/
-  gas-script/         # Test app: basic GAS project
-  gas-webapp/         # Test app: GAS web app (doGet + HTML)
+  gas-script/           # Test app: basic GAS project
+  gas-webapp/           # Test app: GAS web app (doGet + HTML)
 ```
 
 ## Commands
@@ -35,7 +49,7 @@ apps/
 ```bash
 pnpm install          # Install dependencies
 pnpm build            # Build all packages
-pnpm test             # Run tests (gas-vite-plugin)
+pnpm test             # Run tests
 pnpm -w run check     # Lint & format check with Biome
 ```
 
@@ -44,8 +58,5 @@ pnpm -w run check     # Lint & format check with Biome
 TypeScript 5.x (compiled via Vite/oxc): Follow standard conventions. See `biome.json` for lint/format rules.
 
 ## Active Technologies
-- TypeScript 5.x, ES2022 target, Node.js 20+ + `unplugin` (core), `tinyglobby` (glob resolution) (003-unplugin-migration)
-- N/A (build plugin, no persistence) (003-unplugin-migration)
-
-## Recent Changes
-- 003-unplugin-migration: Added TypeScript 5.x, ES2022 target, Node.js 20+ + `unplugin` (core), `tinyglobby` (glob resolution)
+- TypeScript 5.x, ES2022 target, Node.js 20+
+- `unplugin` (universal bundler plugin framework), `tinyglobby` (glob resolution)

@@ -1,59 +1,22 @@
 import { copyFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { createUnplugin } from "unplugin";
+import type { PluginBuild as EsbuildPluginBuild } from "esbuild";
+import { createUnplugin, type UnpluginOptions } from "unplugin";
+import type { UserConfig as ViteUserConfig } from "vite";
 import { detectNamesToProtect } from "./core/globals.js";
 import { copyFilesFlat, resolveIncludeFiles } from "./core/include.js";
 import { postProcessBundle } from "./core/post-process.js";
-import type { GasPluginOptions } from "./core/types.js";
+import { removeExportBlocks, stripExportKeywords } from "./core/transforms.js";
+import type { GasPluginOptions, WebpackCompiler } from "./core/types.js";
+import { extractFirstInput, findRootDir, processBundle } from "./core/utils.js";
+
+export { postProcessBundle, removeExportBlocks, stripExportKeywords };
+export type { GasPluginOptions };
 
 const GLOBALS_MARKER = "/* __GAS_GLOBALS__ */";
-const PLUGIN_NAME = "gas-plugin";
+const PLUGIN_NAME = "@gas-plugin/unplugin";
 
-/**
- * Extract the first input file path from various input formats.
- */
-function extractFirstInput(input: unknown): string | undefined {
-  if (typeof input === "string") return input;
-  if (Array.isArray(input) && input.length > 0) {
-    const first = input[0];
-    return typeof first === "string" ? first : first?.in;
-  }
-  if (input && typeof input === "object") {
-    const values = Object.values(input as Record<string, string>);
-    return values.length > 0 ? values[0] : undefined;
-  }
-  return undefined;
-}
-
-/**
- * Walk up from a file path to find the directory containing the manifest.
- * Falls back to parent of parent (assuming src/ convention).
- */
-function findRootDir(filePath: string, manifestPath: string): string {
-  let candidate = dirname(resolve(filePath));
-  while (candidate !== dirname(candidate)) {
-    if (existsSync(resolve(candidate, manifestPath))) {
-      return candidate;
-    }
-    candidate = dirname(candidate);
-  }
-  // Fallback: assume input is in src/, so root is one level up
-  return dirname(dirname(resolve(filePath)));
-}
-
-/**
- * Post-process generated bundle chunks in-memory.
- */
-// biome-ignore lint/suspicious/noExplicitAny: Bundle types vary across Vite/Rollup versions
-function processBundle(bundle: any) {
-  for (const chunk of Object.values(bundle)) {
-    const c = chunk as { type: string; code?: string };
-    if (c.type !== "chunk" || !c.code) continue;
-    c.code = postProcessBundle(c.code);
-  }
-}
-
-export const unpluginFactory = (options: GasPluginOptions = {}) => {
+export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions => {
   const {
     manifest = "src/appsscript.json",
     include = [],
@@ -63,6 +26,10 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
 
   let rootDir = process.cwd();
   let outDir = "dist";
+  // Vite/Rollup/webpack handle post-processing and file copy in their own hooks.
+  // writeBundle is a universal fallback for esbuild/Bun only.
+  let handledByFramework = false;
+  const matchedGlobals = new Set<string>();
 
   function resolveOutDir(): string {
     return resolve(rootDir, outDir);
@@ -76,13 +43,20 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
     if (existsSync(src)) {
       copyFileSync(src, dest);
     } else {
-      // biome-ignore lint/suspicious/noConsole: Plugin needs to warn users about missing manifest
       console.warn(`[${PLUGIN_NAME}] manifest not found: ${manifest}. Skipping copy.`);
     }
 
     if (include.length > 0) {
       const files = resolveIncludeFiles(include, rootDir);
       copyFilesFlat(files, resolvedOutDir);
+    }
+  }
+
+  function warnUnmatchedGlobals() {
+    for (const name of globals) {
+      if (!matchedGlobals.has(name)) {
+        console.warn(`[${PLUGIN_NAME}] globals: "${name}" was not found in any source module`);
+      }
     }
   }
 
@@ -113,6 +87,12 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
       },
       handler(code: string) {
         const toInject = detectNamesToProtect(code, globals, autoGlobals);
+
+        // Track which explicit globals were matched across all modules
+        for (const name of toInject) {
+          if (globals.includes(name)) matchedGlobals.add(name);
+        }
+
         if (toInject.length === 0) return;
 
         const refs = toInject.join(", ");
@@ -125,21 +105,38 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
       enforce: "post" as const,
       apply: "build" as const,
 
-      // biome-ignore lint/suspicious/noExplicitAny: Vite UserConfig shape varies across versions
-      config(config: any) {
-        const build = (config.build ?? {}) as Record<string, unknown>;
-        const rolldownOptions = (build.rolldownOptions ?? {}) as Record<string, unknown>;
-        const output = (rolldownOptions.output ?? {}) as Record<string, unknown>;
+      config(config: ViteUserConfig) {
+        handledByFramework = true;
+        // biome-ignore lint/suspicious/noExplicitAny: Support both Vite 5-7 (rollupOptions) and Vite 8+ (rolldownOptions)
+        const build = (config.build ?? {}) as any;
+
+        // Vite 8+ (Rolldown-based)
+        const rolldownOptions = build.rolldownOptions ?? {};
+        const rolldownOutput = rolldownOptions.output ?? {};
+        const skipSplitRolldown = !(build.lib || Array.isArray(rolldownOptions.input));
+
+        // Vite 5/6/7 (Rollup-based)
+        const rollupOptions = build.rollupOptions ?? {};
+        const rollupOutput = rollupOptions.output ?? {};
+        const skipSplitRollup = !(build.lib || Array.isArray(rollupOptions.input));
 
         return {
           build: {
-            minify: (build.minify ?? false) as boolean,
+            minify: build.minify ?? false,
+            // Vite 8+: codeSplitting controls chunk splitting
             rolldownOptions: {
               ...rolldownOptions,
               output: {
-                ...output,
-                codeSplitting:
-                  build.lib || Array.isArray(rolldownOptions.input) ? undefined : false,
+                ...rolldownOutput,
+                codeSplitting: skipSplitRolldown ? false : undefined,
+              },
+            },
+            // Vite 5/6/7: inlineDynamicImports prevents chunk splitting
+            rollupOptions: {
+              ...rollupOptions,
+              output: {
+                ...rollupOutput,
+                ...(skipSplitRollup ? { inlineDynamicImports: true } : {}),
               },
             },
           },
@@ -156,6 +153,7 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
       },
 
       closeBundle() {
+        warnUnmatchedGlobals();
         copyFiles();
       },
     },
@@ -163,6 +161,7 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
     // Rollup-specific hooks
     rollup: {
       options(inputOptions: { input?: unknown }) {
+        handledByFramework = true;
         const firstInput = extractFirstInput(inputOptions.input);
         if (firstInput) {
           rootDir = findRootDir(firstInput, manifest);
@@ -180,22 +179,24 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
       },
 
       closeBundle() {
+        warnUnmatchedGlobals();
         copyFiles();
       },
     },
 
-    // biome-ignore lint/suspicious/noExplicitAny: webpack Compiler type varies across versions
-    webpack(compiler: any) {
-      if (compiler.options?.context) {
+    webpack(compiler: WebpackCompiler) {
+      handledByFramework = true;
+      if (compiler.options.context) {
         rootDir = compiler.options.context;
       }
-      if (compiler.options?.output?.path) {
+      if (compiler.options.output.path) {
         outDir = compiler.options.output.path;
       }
 
       compiler.hooks.afterEmit.tapAsync(
         PLUGIN_NAME,
         (_compilation: unknown, callback: () => void) => {
+          warnUnmatchedGlobals();
           postProcessOutputFiles();
           copyFiles();
           callback();
@@ -205,8 +206,7 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
 
     // esbuild-specific hooks
     esbuild: {
-      // biome-ignore lint/suspicious/noExplicitAny: esbuild PluginBuild type varies
-      setup(build: any) {
+      setup(build: EsbuildPluginBuild) {
         const opts = build.initialOptions;
         const firstEntry = extractFirstInput(opts.entryPoints);
         if (firstEntry) {
@@ -220,8 +220,10 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
       },
     },
 
-    // writeBundle: post-process output files on disk (esbuild/Bun fallback)
+    // writeBundle: universal fallback for esbuild/Bun (skipped when framework handles it)
     writeBundle() {
+      if (handledByFramework) return;
+      warnUnmatchedGlobals();
       postProcessOutputFiles();
       copyFiles();
     },
@@ -231,7 +233,3 @@ export const unpluginFactory = (options: GasPluginOptions = {}) => {
 export const unplugin = createUnplugin(unpluginFactory);
 
 export default unplugin;
-// biome-ignore lint/performance/noBarrelFile: Plugin re-exports transforms and types for consumers
-export { postProcessBundle } from "./core/post-process.js";
-export { removeExportBlocks, stripExportKeywords } from "./core/transforms.js";
-export type { GasPluginOptions } from "./core/types.js";

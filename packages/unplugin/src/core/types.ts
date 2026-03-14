@@ -1,14 +1,26 @@
+export interface WebpackCompiler {
+  options: {
+    context?: string;
+    output: { path?: string };
+  };
+  hooks: {
+    afterEmit: {
+      tapAsync: (name: string, cb: (compilation: unknown, callback: () => void) => void) => void;
+    };
+  };
+}
+
 export interface GasPluginOptions {
   /**
    * Path to appsscript.json manifest file.
-   * Resolved relative to Vite's `root`.
+   * Resolved relative to the project root.
    * @default "src/appsscript.json"
    */
   manifest?: string;
 
   /**
    * Glob patterns for additional files to copy flat to the output directory.
-   * Resolved relative to Vite's `root` via tinyglobby.
+   * Resolved relative to the project root via tinyglobby.
    * Files are copied without subdirectory structure (basename only).
    * Duplicate basenames trigger a warning; the first match wins.
    *

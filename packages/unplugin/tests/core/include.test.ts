@@ -117,7 +117,7 @@ describe("copyFilesFlat", () => {
     copyFilesFlat(files, outDir);
 
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[gas-vite-plugin] filename collision"),
+      expect.stringContaining("[@gas-plugin/unplugin] filename collision"),
     );
 
     // First match wins

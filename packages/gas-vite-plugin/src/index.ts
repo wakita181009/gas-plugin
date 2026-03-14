@@ -90,7 +90,6 @@ export default function gasPlugin(options: GasPluginOptions = {}): Plugin {
       if (existsSync(src)) {
         copyFileSync(src, dest);
       } else {
-        // biome-ignore lint/suspicious/noConsole: Vite plugin needs to warn users about missing manifest
         console.warn(`[gas-vite-plugin] manifest not found: ${manifest}. Skipping copy.`);
       }
 

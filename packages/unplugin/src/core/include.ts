@@ -29,9 +29,8 @@ export function copyFilesFlat(files: string[], outDir: string): void {
     const dest = resolve(outDir, name);
 
     if (seen.has(name)) {
-      // biome-ignore lint/suspicious/noConsole: Plugin needs to warn users about filename collision
       console.warn(
-        `[gas-vite-plugin] filename collision: "${name}" from "${file}" skipped (already copied from "${seen.get(name)}")`,
+        `[@gas-plugin/unplugin] filename collision: "${name}" from "${file}" skipped (already copied from "${seen.get(name)}")`,
       );
       continue;
     }

@@ -13,7 +13,7 @@ export default defineConfig({
         esbuild: "src/esbuild.ts",
         bun: "src/bun.ts",
       },
-      formats: ["es", "cjs"],
+      formats: ["es"],
     },
     rolldownOptions: {
       external: [

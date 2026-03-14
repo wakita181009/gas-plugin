@@ -112,7 +112,12 @@
         "useThrowOnlyError": "error"
       },
       "suspicious": {
-        "noConsole": "warn",
+        "noConsole": {
+          "level": "warn",
+          "options": {
+            "allow": ["warn"]
+          }
+        },
         "noEmptyBlockStatements": "error",
         "noEvolvingTypes": "error",
         "noMisplacedAssertion": "error",

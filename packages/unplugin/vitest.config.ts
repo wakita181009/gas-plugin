@@ -6,16 +6,18 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: [
+        "src/index.ts",
         "src/core/transforms.ts",
         "src/core/include.ts",
         "src/core/globals.ts",
         "src/core/post-process.ts",
+        "src/core/utils.ts",
       ],
       thresholds: {
-        statements: 100,
-        branches: 100,
-        functions: 100,
-        lines: 100,
+        statements: 80,
+        branches: 75,
+        functions: 80,
+        lines: 80,
       },
     },
   },

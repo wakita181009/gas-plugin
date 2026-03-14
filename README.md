@@ -1,12 +1,14 @@
-# @gas-plugin/unplugin
+# @gas-plugin
 
-A universal bundler plugin for Google Apps Script projects.
-
-Write standard TypeScript with `export function` — the plugin strips exports, copies manifests, and protects functions from tree-shaking so your code runs on GAS as-is. Works with **Vite**, **Rollup**, **webpack**, **esbuild**, and **Bun**.
+Tooling for Google Apps Script projects — scaffold a new project in seconds and build with any bundler.
 
 ## Quick Start
 
 ```bash
+# Scaffold a new project
+npx @gas-plugin/cli create
+
+# Or install the bundler plugin directly
 npm install -D @gas-plugin/unplugin
 ```
 
@@ -32,13 +34,12 @@ npx vite build
 npx clasp push
 ```
 
-See [`packages/unplugin/README.md`](./packages/unplugin/README.md) for full documentation, all bundler examples, and options.
-
 ## Packages
 
 | Package | Description |
 |---------|-------------|
 | [`@gas-plugin/unplugin`](./packages/unplugin/) | Universal bundler plugin (Vite, Rollup, webpack, esbuild, Bun) |
+| [`@gas-plugin/cli`](./packages/cli/) | Scaffolding CLI (`npx @gas-plugin/cli create`) |
 | [`gas-vite-plugin`](./packages/gas-vite-plugin/) | Legacy Vite-only plugin (deprecated) |
 
 ## Example Apps
@@ -54,6 +55,7 @@ See [`packages/unplugin/README.md`](./packages/unplugin/README.md) for full docu
 pnpm install          # Install dependencies
 pnpm build            # Build all packages
 pnpm test             # Run tests
+pnpm test:e2e         # Run E2E tests
 pnpm -w run check     # Lint & format with Biome
 ```
 

@@ -134,7 +134,7 @@ export default defineCommand({
     clasp: {
       type: "boolean",
       description: "Include clasp configuration files",
-      default: false,
+      default: true,
     },
     "script-id": {
       type: "string",

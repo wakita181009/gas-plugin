@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { removeExportBlocks, stripExportKeywords } from "../../src/core/transforms.js";
+import { removeExportBlocks, stripExportKeywords } from "../../src";
 
 describe("stripExportKeywords", () => {
   it("strips export from function declarations", () => {

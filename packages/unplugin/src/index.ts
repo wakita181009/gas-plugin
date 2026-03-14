@@ -1,8 +1,9 @@
 import { copyFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import type { PluginBuild as EsbuildPluginBuild } from "esbuild";
 import { createUnplugin, type UnpluginOptions } from "unplugin";
-import type { UserConfig as ViteUserConfig } from "vite";
+import type { BuildEnvironmentOptions, UserConfig as ViteUserConfig } from "vite";
 import { detectNamesToProtect } from "./core/globals.js";
 import { copyFilesFlat, resolveIncludeFiles } from "./core/include.js";
 import { postProcessBundle } from "./core/post-process.js";
@@ -50,6 +51,54 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
       const files = resolveIncludeFiles(include, rootDir);
       copyFilesFlat(files, resolvedOutDir);
     }
+  }
+
+  function detectViteMajor(build: BuildEnvironmentOptions): number {
+    try {
+      const req = createRequire(import.meta.url);
+      return Number((req("vite/package.json") as { version: string }).version.split(".")[0]);
+    } catch {
+      // Fallback: if rolldownOptions exists on user config, assume Vite 8+
+      return build.rolldownOptions === undefined ? 5 : 8;
+    }
+  }
+
+  function buildVite8Config(build: BuildEnvironmentOptions) {
+    const rolldownOptions = build.rolldownOptions ?? {};
+    const rolldownOutput = rolldownOptions.output ?? {};
+    const skipSplit = !(build.lib || Array.isArray(rolldownOptions.input));
+
+    return {
+      build: {
+        minify: build.minify ?? false,
+        rolldownOptions: {
+          ...rolldownOptions,
+          output: {
+            ...rolldownOutput,
+            codeSplitting: skipSplit ? false : undefined,
+          },
+        },
+      },
+    };
+  }
+
+  function buildViteLegacyConfig(build: BuildEnvironmentOptions) {
+    const rollupOptions = build.rollupOptions ?? {};
+    const rollupOutput = rollupOptions.output ?? {};
+    const skipSplit = !(build.lib || Array.isArray(rollupOptions.input));
+
+    return {
+      build: {
+        minify: build.minify ?? false,
+        rollupOptions: {
+          ...rollupOptions,
+          output: {
+            ...rollupOutput,
+            ...(skipSplit ? { inlineDynamicImports: true } : {}),
+          },
+        },
+      },
+    };
   }
 
   function warnUnmatchedGlobals() {
@@ -107,40 +156,9 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
 
       config(config: ViteUserConfig) {
         handledByFramework = true;
-        // biome-ignore lint/suspicious/noExplicitAny: Support both Vite 5-7 (rollupOptions) and Vite 8+ (rolldownOptions)
-        const build = (config.build ?? {}) as any;
-
-        // Vite 8+ (Rolldown-based)
-        const rolldownOptions = build.rolldownOptions ?? {};
-        const rolldownOutput = rolldownOptions.output ?? {};
-        const skipSplitRolldown = !(build.lib || Array.isArray(rolldownOptions.input));
-
-        // Vite 5/6/7 (Rollup-based)
-        const rollupOptions = build.rollupOptions ?? {};
-        const rollupOutput = rollupOptions.output ?? {};
-        const skipSplitRollup = !(build.lib || Array.isArray(rollupOptions.input));
-
-        return {
-          build: {
-            minify: build.minify ?? false,
-            // Vite 8+: codeSplitting controls chunk splitting
-            rolldownOptions: {
-              ...rolldownOptions,
-              output: {
-                ...rolldownOutput,
-                codeSplitting: skipSplitRolldown ? false : undefined,
-              },
-            },
-            // Vite 5/6/7: inlineDynamicImports prevents chunk splitting
-            rollupOptions: {
-              ...rollupOptions,
-              output: {
-                ...rollupOutput,
-                ...(skipSplitRollup ? { inlineDynamicImports: true } : {}),
-              },
-            },
-          },
-        };
+        const build: BuildEnvironmentOptions = config.build ?? {};
+        const viteMajor = detectViteMajor(build);
+        return viteMajor >= 8 ? buildVite8Config(build) : buildViteLegacyConfig(build);
       },
 
       configResolved(config: { root: string; build: { outDir: string } }) {

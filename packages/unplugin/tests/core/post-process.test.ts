@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { postProcessBundle } from "../../src/core/post-process.js";
+import { postProcessBundle } from "../../src";
 
 describe("postProcessBundle", () => {
   it("removes globals marker injections", () => {

@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { GasPluginOptions } from "../../src/core/types.js";
+import type { GasPluginOptions } from "../../src";
 
 export function createTestContext(fixturesDir: string) {
   function createFixture(name: string, files: Record<string, string>): string {

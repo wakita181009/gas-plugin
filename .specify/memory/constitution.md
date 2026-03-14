@@ -47,6 +47,7 @@ Biome enforces lint + format with strict rules:
 - **No dead code**: `noUnusedImports`, `noUnusedVariables`, `noUnusedFunctionParameters`
 - **Explicit exports**: `noBarrelFile`, `noReExportAll` (except where `biome-ignore` is justified)
 - **Style discipline**: `noCommonJs`, `noNonNullAssertion`, `noParameterAssign`, `noEvolvingTypes`, `noVoid`, `useNamingConvention` (camelCase/PascalCase for functions, CONSTANT_CASE allowed for const)
+- **No `any`**: `noExplicitAny` — never use `any` or suppress with `biome-ignore`. If a dependency already exports a suitable type, reuse it (e.g., `BuildEnvironmentOptions` from `vite`). If no type is available, define a project-local `interface` in `src/core/types.ts` that describes the shape you need.
 - **Complexity**: `noExcessiveCognitiveComplexity`
 - **Console**: `noConsole: warn` — console usage requires explicit `biome-ignore` justification
 - **Import ordering**: `organizeImports` assist enabled — type imports sort before value imports
@@ -90,4 +91,4 @@ These are intentional omissions, not TODOs:
 - New plugin options require documentation in the `GasPluginOptions` interface JSDoc
 - Breaking changes to the public API require a major version bump
 
-**Version**: 3.0.0 | **Ratified**: 2026-03-13 | **Last Amended**: 2026-03-14
+**Version**: 3.1.0 | **Ratified**: 2026-03-13 | **Last Amended**: 2026-03-14

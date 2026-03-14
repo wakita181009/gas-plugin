@@ -37,7 +37,7 @@ export const BUNDLERS: BundlerConfig[] = [
     configFile: "vite.config.ts",
     importPath: "@gas-plugin/unplugin/vite",
     devDependencies: {
-      vite: "^6.0.0",
+      vite: "^8.0.0",
       "@gas-plugin/unplugin": "^0.0.6",
     },
     buildCommand: "vite build",
@@ -60,7 +60,7 @@ export const BUNDLERS: BundlerConfig[] = [
     configFile: "esbuild.config.mjs",
     importPath: "@gas-plugin/unplugin/esbuild",
     devDependencies: {
-      esbuild: "^0.24.0",
+      esbuild: "^0.27.0",
       "@gas-plugin/unplugin": "^0.0.6",
     },
     buildCommand: "node esbuild.config.mjs",

@@ -69,7 +69,7 @@ async function generatePackageJson(options: ScaffoldOptions, destDir: string): P
       build: bundler.buildCommand,
     },
     devDependencies: {
-      typescript: "^5.0.0",
+      typescript: "^5.8.0",
       ...bundler.devDependencies,
     },
   };

@@ -8,8 +8,8 @@ import {
 } from "../../src/core/templates.js";
 
 describe("TEMPLATES registry", () => {
-  it("has 3 templates", () => {
-    expect(TEMPLATES).toHaveLength(3);
+  it("has 2 templates", () => {
+    expect(TEMPLATES).toHaveLength(2);
   });
 
   it("all templates have required fields", () => {
@@ -37,20 +37,12 @@ describe("TEMPLATES registry", () => {
     expect(webapp?.globals).toContain("doGet");
     expect(webapp?.globals).toContain("doPost");
   });
-
-  it("library template has no scopes or globals", () => {
-    const lib = getTemplate("library");
-    expect(lib?.oauthScopes).toEqual([]);
-    expect(lib?.globals).toEqual([]);
-    expect(lib?.hasHtml).toBe(false);
-  });
 });
 
 describe("getTemplate", () => {
   it("returns correct template by id", () => {
     expect(getTemplate("basic")?.id).toBe("basic");
     expect(getTemplate("webapp")?.id).toBe("webapp");
-    expect(getTemplate("library")?.id).toBe("library");
   });
 
   it("returns undefined for invalid id", () => {

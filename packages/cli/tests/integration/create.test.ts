@@ -150,53 +150,6 @@ describe("scaffold - webapp template", () => {
   });
 });
 
-describe("scaffold - library template", () => {
-  let tempDir: string;
-
-  beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), "gas-cli-test-library-"));
-  });
-
-  afterEach(async () => {
-    await rm(tempDir, { recursive: true, force: true });
-  });
-
-  it("generates exported functions in src/index.ts", async () => {
-    const opts = makeOptions(tempDir, { template: "library" });
-    await scaffold(opts);
-    const content = readFileSync(join(opts.targetDir, "src/index.ts"), "utf-8");
-    expect(content).toContain("function");
-  });
-
-  it("generates src/types.ts", async () => {
-    const opts = makeOptions(tempDir, { template: "library" });
-    await scaffold(opts);
-    expect(existsSync(join(opts.targetDir, "src/types.ts"))).toBe(true);
-  });
-
-  it("has no scopes in appsscript.json", async () => {
-    const opts = makeOptions(tempDir, { template: "library" });
-    await scaffold(opts);
-    const manifest = JSON.parse(readFileSync(join(opts.targetDir, "appsscript.json"), "utf-8"));
-    expect(manifest.oauthScopes).toBeUndefined();
-  });
-
-  it("has no globals in bundler config", async () => {
-    const opts = makeOptions(tempDir, { template: "library" });
-    await scaffold(opts);
-    const config = readFileSync(join(opts.targetDir, "vite.config.ts"), "utf-8");
-    expect(config).not.toContain("globals:");
-  });
-
-  it("generates clean bundler config with no empty lines in plugin options", async () => {
-    const opts = makeOptions(tempDir, { template: "library" });
-    await scaffold(opts);
-    const config = readFileSync(join(opts.targetDir, "vite.config.ts"), "utf-8");
-    // No empty lines between gasPlugin({ and })
-    expect(config).not.toMatch(/gasPlugin\(\{\n\s*\n/);
-  });
-});
-
 describe("scaffold - clasp integration", () => {
   let tempDir: string;
 

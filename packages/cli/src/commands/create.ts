@@ -119,7 +119,7 @@ export default defineCommand({
     template: {
       type: "string",
       alias: "t",
-      description: "Template: basic | webapp | library",
+      description: "Template: basic | webapp",
     },
     bundler: {
       type: "string",

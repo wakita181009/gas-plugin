@@ -43,15 +43,6 @@ export const TEMPLATES: TemplateDefinition[] = [
     globals: ["doGet", "doPost"],
     hasHtml: true,
   },
-  {
-    id: "library",
-    label: "Library",
-    description: "Reusable GAS library with exported functions",
-    sourceDir: "library",
-    oauthScopes: [],
-    globals: [],
-    hasHtml: false,
-  },
 ];
 
 export const BUNDLERS: BundlerConfig[] = [

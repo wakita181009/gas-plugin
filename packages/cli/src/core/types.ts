@@ -10,7 +10,7 @@ export interface ScaffoldOptions {
   targetDir: string;
 }
 
-export type TemplateId = "basic" | "webapp" | "library";
+export type TemplateId = "basic" | "webapp";
 export type BundlerId = "vite" | "rollup" | "esbuild" | "webpack";
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
 

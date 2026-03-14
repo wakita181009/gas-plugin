@@ -39,7 +39,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
-      - run: pnpm --filter @gas-plugin/unplugin test
 
   test-bun:
     name: Test (Bun)
@@ -53,7 +52,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @gas-plugin/unplugin test
+      - run: pnpm test
 
   test-deno:
     name: Test (Deno)
@@ -67,7 +66,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @gas-plugin/unplugin test
+      - run: pnpm test
 
   build:
     name: Build

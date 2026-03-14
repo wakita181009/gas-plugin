@@ -14,7 +14,7 @@ export interface GasPluginOptions {
   /**
    * Path to appsscript.json manifest file.
    * Resolved relative to the project root.
-   * @default "src/appsscript.json"
+   * @default "appsscript.json"
    */
   manifest?: string;
 

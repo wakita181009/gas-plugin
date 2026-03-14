@@ -18,12 +18,7 @@ const GLOBALS_MARKER = "/* __GAS_GLOBALS__ */";
 const PLUGIN_NAME = "@gas-plugin/unplugin";
 
 export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions => {
-  const {
-    manifest = "src/appsscript.json",
-    include = [],
-    globals = [],
-    autoGlobals = true,
-  } = options;
+  const { manifest = "appsscript.json", include = [], globals = [], autoGlobals = true } = options;
 
   let rootDir = process.cwd();
   let outDir = "dist";

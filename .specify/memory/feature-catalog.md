@@ -6,6 +6,7 @@
 |-------------|-------------|-------------|
 | gas-vite-plugin | `.specify/features/gas-vite-plugin/overview.md` | (Legacy) Vite-only plugin that transforms ES module output into GAS-compatible flat files |
 | gas-unplugin | `.specify/features/gas-unplugin/overview.md` | Universal bundler plugin (unplugin v3) for GAS projects — supports Vite, Rollup, webpack, esbuild, Bun |
+| gas-cli | `.specify/features/gas-cli/overview.md` | Extensible CLI tool for scaffolding GAS projects — 3 templates × 4 bundlers, interactive + non-interactive modes, clasp integration |
 
 ## Use Cases
 
@@ -22,6 +23,11 @@
 | gas-unplugin | Include Copy | `.specify/features/gas-unplugin/include-copy.md` | command |
 | gas-unplugin | Globals Protection | `.specify/features/gas-unplugin/globals-protection.md` | command |
 | gas-unplugin | Multi-Bundler Dispatch | `.specify/features/gas-unplugin/multi-bundler-dispatch.md` | lifecycle |
+| gas-cli | Scaffold Project | `.specify/features/gas-cli/scaffold-project.md` | command |
+| gas-cli | Choose Bundler | `.specify/features/gas-cli/choose-bundler.md` | command |
+| gas-cli | Choose Template | `.specify/features/gas-cli/choose-template.md` | command |
+| gas-cli | Non-Interactive Mode | `.specify/features/gas-cli/non-interactive-mode.md` | command |
+| gas-cli | clasp Integration | `.specify/features/gas-cli/clasp-integration.md` | command |
 
 ## Reverse Lookup — by Endpoint
 
@@ -44,6 +50,14 @@
 | Vite/Rollup `closeBundle()` | `.specify/features/gas-unplugin/manifest-copy.md`, `.specify/features/gas-unplugin/include-copy.md` |
 | webpack `afterEmit` | `.specify/features/gas-unplugin/multi-bundler-dispatch.md` |
 | `writeBundle` (fallback) | `.specify/features/gas-unplugin/multi-bundler-dispatch.md` |
+| `scaffold()` | `.specify/features/gas-cli/scaffold-project.md` |
+| `renderTemplate()` | `.specify/features/gas-cli/scaffold-project.md` |
+| `renderFile()` | `.specify/features/gas-cli/scaffold-project.md` |
+| `getTemplate()` | `.specify/features/gas-cli/choose-template.md` |
+| `getBundler()` | `.specify/features/gas-cli/choose-bundler.md` |
+| `detectPackageManager()` | `.specify/features/gas-cli/overview.md` |
+| `initGit()` | `.specify/features/gas-cli/scaffold-project.md` |
+| `cancelAndExit()` | `.specify/features/gas-cli/non-interactive-mode.md` |
 
 ## Reverse Lookup — by File
 
@@ -74,6 +88,19 @@
 | `packages/gas-vite-plugin/src/transforms.ts` | (legacy) gas-vite-plugin export-stripping |
 | `packages/gas-vite-plugin/src/include.ts` | (legacy) gas-vite-plugin include-copy |
 | `packages/gas-vite-plugin/src/types.ts` | (legacy) gas-vite-plugin overview |
+| `packages/cli/src/index.ts` | gas-cli overview |
+| `packages/cli/src/commands/create.ts` | gas-cli scaffold-project, choose-bundler, choose-template, non-interactive-mode, clasp-integration |
+| `packages/cli/src/core/scaffold.ts` | gas-cli scaffold-project, choose-bundler, choose-template, clasp-integration |
+| `packages/cli/src/core/render.ts` | gas-cli scaffold-project |
+| `packages/cli/src/core/templates.ts` | gas-cli choose-bundler, choose-template |
+| `packages/cli/src/core/detect.ts` | gas-cli overview |
+| `packages/cli/src/core/git.ts` | gas-cli scaffold-project |
+| `packages/cli/src/core/types.ts` | gas-cli overview |
+| `packages/cli/tests/core/render.test.ts` | gas-cli scaffold-project |
+| `packages/cli/tests/core/templates.test.ts` | gas-cli choose-bundler, choose-template |
+| `packages/cli/tests/core/detect.test.ts` | gas-cli overview |
+| `packages/cli/tests/core/git.test.ts` | gas-cli scaffold-project |
+| `packages/cli/tests/integration/create.test.ts` | gas-cli scaffold-project, choose-template, clasp-integration |
 
 ## Reverse Lookup — by Search Tag
 
@@ -107,6 +134,19 @@
 | Bun plugin | gas-unplugin multi-bundler-dispatch |
 | subpath exports | gas-unplugin multi-bundler-dispatch |
 | handledByFramework | gas-unplugin multi-bundler-dispatch |
+| CLI | gas-cli overview |
+| scaffolding | gas-cli scaffold-project |
+| create command | gas-cli scaffold-project, non-interactive-mode |
+| template | gas-cli choose-template |
+| bundler config | gas-cli choose-bundler |
+| citty | gas-cli overview |
+| @clack/prompts | gas-cli overview, non-interactive-mode |
+| clasp | gas-cli clasp-integration |
+| package manager detection | gas-cli overview |
+| git init | gas-cli scaffold-project |
+| non-interactive | gas-cli non-interactive-mode |
+| --yes flag | gas-cli non-interactive-mode |
+| --force flag | gas-cli non-interactive-mode |
 
 ## Spec Traceability
 
@@ -117,3 +157,4 @@ Specs 001–003 have been archived (available in git history). Design decisions 
 | 001-gas-vite-plugin-v01 | (legacy) gas-vite-plugin: overview, export-stripping, manifest-copy, build-defaults |
 | 002-gas-vite-plugin-v02 | (legacy) gas-vite-plugin: include-copy, globals-protection, export-stripping |
 | 003-unplugin-migration | gas-unplugin: all use cases (multi-bundler-dispatch, export-stripping, manifest-copy, include-copy, globals-protection, build-defaults) |
+| 004-gas-cli | gas-cli: all use cases (scaffold-project, choose-bundler, choose-template, non-interactive-mode, clasp-integration) |

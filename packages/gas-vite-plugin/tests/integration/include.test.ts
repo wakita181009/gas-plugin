@@ -14,7 +14,7 @@ describe("US1: include option", () => {
     const dir = createFixture("include-html", {
       "src/main.ts": "export function doGet() { return 1; }",
       "src/index.html": `<!DOCTYPE html><html lang="en"><body>Hello</body></html>`,
-      "src/appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
+      "appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
     });
 
     await buildFixture(dir, { include: ["src/**/*.html"] });
@@ -29,7 +29,7 @@ describe("US1: include option", () => {
       "src/main.ts": "export function doGet() { return 1; }",
       "src/index.html": `<html lang="en"></html>`,
       "src/styles/app.css": "body { margin: 0; }",
-      "src/appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
+      "appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
     });
 
     await buildFixture(dir, { include: ["src/**/*.html", "src/**/*.css"] });
@@ -44,7 +44,7 @@ describe("US1: include option", () => {
     const dir = createFixture("include-default", {
       "src/main.ts": "export function onOpen() {}",
       "src/index.html": `<html lang="en"></html>`,
-      "src/appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
+      "appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
     });
 
     await buildFixture(dir); // no include option
@@ -56,7 +56,7 @@ describe("US1: include option", () => {
   it("empty pattern match succeeds without errors", async () => {
     const dir = createFixture("include-empty", {
       "src/main.ts": "export function onOpen() {}",
-      "src/appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
+      "appsscript.json": '{"timeZone":"Asia/Tokyo","runtimeVersion":"V8"}',
     });
 
     // Pattern matches no files — should not error

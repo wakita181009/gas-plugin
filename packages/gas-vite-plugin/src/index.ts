@@ -7,12 +7,7 @@ import { removeExportBlocks, stripExportKeywords } from "./transforms.js";
 import type { GasPluginOptions } from "./types.js";
 
 export default function gasPlugin(options: GasPluginOptions = {}): Plugin {
-  const {
-    manifest = "src/appsscript.json",
-    include = [],
-    globals = [],
-    autoGlobals = true,
-  } = options;
+  const { manifest = "appsscript.json", include = [], globals = [], autoGlobals = true } = options;
 
   const GLOBALS_MARKER = "/* __GAS_GLOBALS__ */";
 

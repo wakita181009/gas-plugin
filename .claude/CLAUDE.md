@@ -53,6 +53,16 @@ pnpm test             # Run tests
 pnpm -w run check     # Lint & format check with Biome
 ```
 
+## Versioning
+
+`@gas-plugin/unplugin` and `@gas-plugin/cli` share the same version. To bump:
+
+```bash
+pnpm -r exec -- npm version <ver> --no-git-tag-version
+```
+
+`gas-vite-plugin` (deprecated) is also updated but that is fine.
+
 ## Code Style
 
 TypeScript 5.x (compiled via Vite/oxc): Follow standard conventions. See `biome.json` for lint/format rules.
@@ -60,3 +70,8 @@ TypeScript 5.x (compiled via Vite/oxc): Follow standard conventions. See `biome.
 ## Active Technologies
 - TypeScript 5.x, ES2022 target, Node.js 20+
 - `unplugin` (universal bundler plugin framework), `tinyglobby` (glob resolution)
+- TypeScript 5.x, ES2022 target, Node.js 20+ + `citty` ^0.2.1 (CLI framework, subcommand routing), `@clack/prompts` ^1.1.0 (interactive prompts) (004-gas-cli)
+- N/A (file-system only — template copy + string substitution) (004-gas-cli)
+
+## Recent Changes
+- 004-gas-cli: Added TypeScript 5.x, ES2022 target, Node.js 20+ + `citty` ^0.2.1 (CLI framework, subcommand routing), `@clack/prompts` ^1.1.0 (interactive prompts)

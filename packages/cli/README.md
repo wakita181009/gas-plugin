@@ -42,7 +42,7 @@ npx @gas-plugin/cli create my-app \
 | `--template` | `-t` | `basic` \| `webapp` | `basic` | Project template |
 | `--bundler` | `-b` | `vite` \| `rollup` \| `esbuild` \| `webpack` | `vite` | Bundler to use |
 | `--install` | | boolean | `true` | Install dependencies after scaffolding |
-| `--clasp` | | boolean | `false` | Include `.clasp.json` and `.claspignore` |
+| `--clasp` | | boolean | `true` | Include `.clasp.json` and `.claspignore` |
 | `--script-id` | | string | — | GAS Script ID for `.clasp.json` (requires `--clasp`) |
 | `--force` | | boolean | `false` | Skip target directory confirmation |
 | `--yes` | `-y` | boolean | `false` | Use defaults for all prompts |

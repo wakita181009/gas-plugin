@@ -1,6 +1,6 @@
 {
   "name": "@gas-plugin/cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Extensible CLI tool for scaffolding Google Apps Script projects",
   "type": "module",
   "bin": {

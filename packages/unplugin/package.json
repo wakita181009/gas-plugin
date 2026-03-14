@@ -1,6 +1,6 @@
 {
   "name": "@gas-plugin/unplugin",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Universal bundler plugin for Google Apps Script projects (Vite, Rollup, webpack, esbuild, Bun)",
   "type": "module",
   "exports": {

@@ -14,7 +14,8 @@
       "**/vite.config.ts",
       "biome.json",
       "**/package.json",
-      "**/tsconfig.json"
+      "**/tsconfig.json",
+      "!packages/cli/src/templates"
     ]
   },
   "formatter": {

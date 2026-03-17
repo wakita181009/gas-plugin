@@ -24,8 +24,7 @@
       "merge": true
     }
   ],
-  "pull-request-title-pattern": "chore: release ${component} ${version}",
+  "group-pull-request-title-pattern": "chore: release",
   "pull-request-header": ":robot: I have created a release *beep* *boop*",
-  "group-pull-request-title-pattern": "chore: release ${version}",
   "separate-pull-requests": false
 }

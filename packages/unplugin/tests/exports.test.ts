@@ -11,6 +11,11 @@ describe("subpath exports", () => {
     expect(typeof mod.default).toBe("function");
   });
 
+  it("exports a rolldown plugin factory from /rolldown", async () => {
+    const mod = await import("../src/rolldown.js");
+    expect(typeof mod.default).toBe("function");
+  });
+
   it("exports a webpack plugin factory from /webpack", async () => {
     const mod = await import("../src/webpack.js");
     expect(typeof mod.default).toBe("function");

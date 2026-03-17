@@ -209,6 +209,32 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
       },
     },
 
+    // Rolldown-specific hooks
+    rolldown: {
+      options(inputOptions: { input?: unknown }) {
+        handledByFramework = true;
+        const firstInput = extractFirstInput(inputOptions.input);
+        if (firstInput) {
+          rootDir = findRootDir(firstInput, manifest);
+        }
+      },
+
+      outputOptions(outputOptions: { dir?: string }) {
+        if (outputOptions.dir) {
+          outDir = resolve(outputOptions.dir);
+        }
+      },
+
+      generateBundle(_options: unknown, bundle: unknown) {
+        processBundle(bundle);
+      },
+
+      closeBundle() {
+        warnUnmatchedGlobals();
+        copyFiles();
+      },
+    },
+
     webpack(compiler: WebpackCompiler) {
       handledByFramework = true;
       if (compiler.options.context) {

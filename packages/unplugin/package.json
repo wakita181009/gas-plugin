@@ -1,7 +1,7 @@
 {
   "name": "@gas-plugin/unplugin",
   "version": "0.0.13",
-  "description": "Universal bundler plugin for Google Apps Script projects (Vite, Rollup, webpack, esbuild, Bun)",
+  "description": "Universal bundler plugin for Google Apps Script projects (Vite, Rollup, Rolldown, webpack, esbuild, Bun)",
   "type": "module",
   "exports": {
     ".": {
@@ -24,6 +24,10 @@
       "types": "./dist/esbuild.d.ts",
       "import": "./dist/esbuild.js"
     },
+    "./rolldown": {
+      "types": "./dist/rolldown.d.ts",
+      "import": "./dist/rolldown.js"
+    },
     "./bun": {
       "types": "./dist/bun.d.ts",
       "import": "./dist/bun.js"
@@ -43,6 +47,7 @@
     "unplugin",
     "vite",
     "rollup",
+    "rolldown",
     "webpack",
     "esbuild",
     "bun",
@@ -58,6 +63,7 @@
   },
   "peerDependencies": {
     "esbuild": ">=0.17.0",
+    "rolldown": ">=1.0.0",
     "rollup": ">=4.0.0",
     "vite": ">=5.0.0",
     "webpack": ">=5.0.0"
@@ -67,6 +73,9 @@
       "optional": true
     },
     "rollup": {
+      "optional": true
+    },
+    "rolldown": {
       "optional": true
     },
     "webpack": {

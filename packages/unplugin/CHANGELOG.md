@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/wakita181009/gas-plugin/compare/unplugin-v0.1.3...unplugin-v0.2.0) (2026-04-19)
+
+
+### Features
+
+* add E2E tests and fix scaffold dependency issues ([60d488f](https://github.com/wakita181009/gas-plugin/commit/60d488f25827bae6f6b3a311d47ceee71a840b03))
+* **unplugin:** add Rolldown support & introduce release-please ([#6](https://github.com/wakita181009/gas-plugin/issues/6)) ([124fb4f](https://github.com/wakita181009/gas-plugin/commit/124fb4f3f1f9b08fc732b6261f7c739a592baf48))
+
+
+### Bug Fixes
+
+* add engines field requiring Node.js &gt;=20 ([#10](https://github.com/wakita181009/gas-plugin/issues/10)) ([afd0af9](https://github.com/wakita181009/gas-plugin/commit/afd0af97ada2dda715955ef3eaed337d21744531))
+* **ci:** use GH_PAT for release-please to enable workflow triggers ([733cae2](https://github.com/wakita181009/gas-plugin/commit/733cae2a36a49080a2fd85dc27b68602387ecb5b))
+
 ## [0.1.3](https://github.com/wakita181009/gas-plugin/compare/unplugin-v0.1.2...unplugin-v0.1.3) (2026-03-17)
 
 

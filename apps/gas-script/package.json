@@ -9,7 +9,7 @@
     "@gas-plugin/unplugin": "workspace:*"
   },
   "devDependencies": {
-    "@types/google-apps-script": "^2.0.8",
-    "vite": "^8.0.8"
+    "@types/google-apps-script": "^2.0.11",
+    "vite": "^8.0.16"
   }
 }

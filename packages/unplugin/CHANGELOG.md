@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/wakita181009/gas-plugin/compare/unplugin-v0.2.0...unplugin-v0.2.1) (2026-07-18)
+
+
+### Bug Fixes
+
+* **tsconfig:** add explicit node types to fix dts build warnings ([#63](https://github.com/wakita181009/gas-plugin/issues/63)) ([773f054](https://github.com/wakita181009/gas-plugin/commit/773f0548695c615339c6184ca2a6d28bc8e20ce1))
+
 ## [0.2.0](https://github.com/wakita181009/gas-plugin/compare/unplugin-v0.1.3...unplugin-v0.2.0) (2026-07-19)
 
 

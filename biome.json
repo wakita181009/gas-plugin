@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -35,7 +35,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "complexity": {
         "noExcessiveCognitiveComplexity": "error",
         "noVoid": "error",
@@ -48,8 +48,7 @@
       },
       "nursery": {
         "noFloatingPromises": "error",
-        "noMisusedPromises": "error",
-        "noNestedPromises": "error"
+        "noMisusedPromises": "error"
       },
       "performance": {
         "noBarrelFile": "error",
@@ -122,7 +121,8 @@
         "noEmptyBlockStatements": "error",
         "noEvolvingTypes": "error",
         "noMisplacedAssertion": "error",
-        "useAwait": "error"
+        "useAwait": "error",
+        "noNestedPromises": "error"
       }
     }
   },

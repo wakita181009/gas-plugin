@@ -1,6 +1,10 @@
 import { cpSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin } from "vite";
 import dts from "vite-plugin-dts";
+import { resolveCatalog } from "./build/resolve-catalog.js";
+
+const workspaceFile = fileURLToPath(new URL("../../pnpm-workspace.yaml", import.meta.url));
 
 function copyTemplates(): Plugin {
   return {
@@ -12,7 +16,11 @@ function copyTemplates(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [dts({ rollupTypes: true, tsconfigPath: "./tsconfig.json" }), copyTemplates()],
+  plugins: [
+    resolveCatalog(workspaceFile),
+    dts({ rollupTypes: true, tsconfigPath: "./tsconfig.json" }),
+    copyTemplates(),
+  ],
   build: {
     lib: {
       entry: {

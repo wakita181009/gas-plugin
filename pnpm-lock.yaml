@@ -4,16 +4,49 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@biomejs/biome':
+      specifier: 2.5.4
+      version: 2.5.4
+    '@types/google-apps-script':
+      specifier: ^2.0.8
+      version: 2.0.8
+    '@types/node':
+      specifier: ^25.6.0
+      version: 25.6.0
+    '@vitest/coverage-v8':
+      specifier: ^4.1.4
+      version: 4.1.4
+    esbuild:
+      specifier: ^0.28.0
+      version: 0.28.0
+    rollup:
+      specifier: ^4.60.1
+      version: 4.60.1
+    typescript:
+      specifier: ^6.0.3
+      version: 6.0.3
+    vite:
+      specifier: ^8.0.8
+      version: 8.0.8
+    vite-plugin-dts:
+      specifier: ^4.5.4
+      version: 4.5.4
+    vitest:
+      specifier: ^4.1.4
+      version: 4.1.4
+
 importers:
 
   .:
     devDependencies:
       '@biomejs/biome':
-        specifier: 2.5.4
+        specifier: 'catalog:'
         version: 2.5.4
       vitest:
-        specifier: ^4.1.4
-        version: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+        specifier: 'catalog:'
+        version: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))
 
   apps/gas-script:
     dependencies:
@@ -22,11 +55,11 @@ importers:
         version: link:../../packages/unplugin
     devDependencies:
       '@types/google-apps-script':
-        specifier: ^2.0.8
+        specifier: 'catalog:'
         version: 2.0.8
       vite:
-        specifier: ^8.0.8
-        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+        specifier: 'catalog:'
+        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
 
   apps/gas-webapp:
     dependencies:
@@ -35,11 +68,11 @@ importers:
         version: link:../../packages/unplugin
     devDependencies:
       '@types/google-apps-script':
-        specifier: ^2.0.8
+        specifier: 'catalog:'
         version: 2.0.8
       vite:
-        specifier: ^8.0.8
-        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+        specifier: 'catalog:'
+        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
 
   packages/cli:
     dependencies:
@@ -51,7 +84,7 @@ importers:
         version: 0.2.2
     devDependencies:
       '@biomejs/biome':
-        specifier: ^2.5.4
+        specifier: 'catalog:'
         version: 2.5.4
       '@gas-plugin/unplugin':
         specifier: workspace:*
@@ -60,19 +93,19 @@ importers:
         specifier: ^12.3.0
         version: 12.3.0(rollup@4.60.1)(tslib@2.8.1)(typescript@6.0.3)
       '@types/google-apps-script':
-        specifier: ^2.0.8
+        specifier: 'catalog:'
         version: 2.0.8
       '@types/node':
-        specifier: ^25.6.0
+        specifier: 'catalog:'
         version: 25.6.0
       '@vitest/coverage-v8':
-        specifier: ^4.1.4
+        specifier: 'catalog:'
         version: 4.1.4(vitest@4.1.4)
       esbuild:
-        specifier: ^0.28.0
+        specifier: 'catalog:'
         version: 0.28.0
       rollup:
-        specifier: ^4.60.1
+        specifier: 'catalog:'
         version: 4.60.1
       ts-loader:
         specifier: ^9.5.7
@@ -81,23 +114,26 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
       vite:
-        specifier: ^8.0.8
-        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+        specifier: 'catalog:'
+        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
       vite-plugin-dts:
-        specifier: ^4.5.4
-        version: 4.5.4(@types/node@25.6.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+        specifier: 'catalog:'
+        version: 4.5.4(@types/node@25.6.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))
       vitest:
-        specifier: ^4.1.4
-        version: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+        specifier: 'catalog:'
+        version: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))
       webpack:
         specifier: ^5.106.2
         version: 5.106.2(esbuild@0.28.0)(webpack-cli@7.0.2)
       webpack-cli:
         specifier: ^7.0.2
         version: 7.0.2(webpack@5.106.2)
+      yaml:
+        specifier: ^2.9.0
+        version: 2.9.0
 
   packages/unplugin:
     dependencies:
@@ -109,7 +145,7 @@ importers:
         version: 0.2.17
       unplugin:
         specifier: ^3.3.0
-        version: 3.3.0(esbuild@0.28.0)(rolldown@1.0.0-rc.9)(rollup@4.60.1)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))(webpack@5.106.2(esbuild@0.28.0))
+        version: 3.3.0(esbuild@0.28.0)(rolldown@1.0.0-rc.9)(rollup@4.60.1)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))(webpack@5.106.2(esbuild@0.28.0))
       webpack:
         specifier: '>=5.0.0'
         version: 5.106.2(esbuild@0.28.0)
@@ -118,29 +154,29 @@ importers:
         specifier: ^1.3.12
         version: 1.3.12
       '@types/node':
-        specifier: ^25.6.0
+        specifier: 'catalog:'
         version: 25.6.0
       '@vitest/coverage-v8':
-        specifier: ^4.1.4
+        specifier: 'catalog:'
         version: 4.1.4(vitest@4.1.4)
       esbuild:
-        specifier: ^0.28.0
+        specifier: 'catalog:'
         version: 0.28.0
       rollup:
-        specifier: ^4.60.1
+        specifier: 'catalog:'
         version: 4.60.1
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
       vite:
-        specifier: ^8.0.8
-        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+        specifier: 'catalog:'
+        version: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
       vite-plugin-dts:
-        specifier: ^4.5.4
-        version: 4.5.4(@types/node@25.6.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+        specifier: 'catalog:'
+        version: 4.5.4(@types/node@25.6.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))
       vitest:
-        specifier: ^4.1.4
-        version: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+        specifier: 'catalog:'
+        version: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))
 
 packages:
 
@@ -1712,10 +1748,6 @@ packages:
     resolution: {integrity: sha512-VKS/ZaQhhkKFMANmAOhhXVoIfBXblQxGX1myCQ2faQrfmobMftXeJPcZGp0gS07ocvGJWDLZGyOZDadDBqYIJg==}
     engines: {node: '>=18'}
 
-  tinyglobby@0.2.16:
-    resolution: {integrity: sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==}
-    engines: {node: '>=12.0.0'}
-
   tinyglobby@0.2.17:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
@@ -1947,6 +1979,11 @@ packages:
 
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
+
+  yaml@2.9.0:
+    resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
 
 snapshots:
 
@@ -2485,7 +2522,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+      vitest: 4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))
 
   '@vitest/expect@4.1.4':
     dependencies:
@@ -2496,13 +2533,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))':
+  '@vitest/mocker@4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.4
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.4':
     dependencies:
@@ -3320,11 +3357,6 @@ snapshots:
 
   tinyexec@1.1.1: {}
 
-  tinyglobby@0.2.16:
-    dependencies:
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
-
   tinyglobby@0.2.17:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.4)
@@ -3358,7 +3390,7 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unplugin@3.3.0(esbuild@0.28.0)(rolldown@1.0.0-rc.9)(rollup@4.60.1)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))(webpack@5.106.2(esbuild@0.28.0)):
+  unplugin@3.3.0(esbuild@0.28.0)(rolldown@1.0.0-rc.9)(rollup@4.60.1)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))(webpack@5.106.2(esbuild@0.28.0)):
     dependencies:
       '@jridgewell/remapping': 2.3.5
       picomatch: 4.0.5
@@ -3367,7 +3399,7 @@ snapshots:
       esbuild: 0.28.0
       rolldown: 1.0.0-rc.9
       rollup: 4.60.1
-      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
       webpack: 5.106.2(esbuild@0.28.0)
 
   update-browserslist-db@1.2.3(browserslist@4.28.2):
@@ -3376,7 +3408,7 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  vite-plugin-dts@4.5.4(@types/node@25.6.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)):
+  vite-plugin-dts@4.5.4(@types/node@25.6.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)):
     dependencies:
       '@microsoft/api-extractor': 7.57.7(@types/node@25.6.0)
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
@@ -3389,29 +3421,30 @@ snapshots:
       magic-string: 0.30.21
       typescript: 6.0.3
     optionalDependencies:
-      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
       - supports-color
 
-  vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1):
+  vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       postcss: 8.5.9
       rolldown: 1.0.0-rc.15
-      tinyglobby: 0.2.16
+      tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 25.6.0
       esbuild: 0.28.0
       fsevents: 2.3.3
       terser: 5.46.1
+      yaml: 2.9.0
 
-  vitest@4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)):
+  vitest@4.1.4(@types/node@25.6.0)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.4
-      '@vitest/mocker': 4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1))
+      '@vitest/mocker': 4.1.4(vite@8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.4
       '@vitest/runner': 4.1.4
       '@vitest/snapshot': 4.1.4
@@ -3422,13 +3455,13 @@ snapshots:
       magic-string: 0.30.21
       obug: 2.1.1
       pathe: 2.0.3
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       std-env: 4.0.0
       tinybench: 2.9.0
       tinyexec: 1.1.1
-      tinyglobby: 0.2.16
+      tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)
+      vite: 8.0.8(@types/node@25.6.0)(esbuild@0.28.0)(terser@5.46.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.6.0
@@ -3542,3 +3575,5 @@ snapshots:
   wildcard@2.0.1: {}
 
   yallist@4.0.0: {}
+
+  yaml@2.9.0: {}

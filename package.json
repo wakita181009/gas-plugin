@@ -9,8 +9,8 @@
     "check": "biome check ."
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.4",
-    "vitest": "^4.1.4"
+    "@biomejs/biome": "catalog:",
+    "vitest": "catalog:"
   },
   "packageManager": "pnpm@11.14.0"
 }

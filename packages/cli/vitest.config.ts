@@ -1,6 +1,11 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
+import { resolveCatalog } from "./build/resolve-catalog.js";
+
+const workspaceFile = fileURLToPath(new URL("../../pnpm-workspace.yaml", import.meta.url));
 
 export default defineConfig({
+  plugins: [resolveCatalog(workspaceFile)],
   test: {
     include: ["tests/**/*.test.ts"],
     coverage: {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/wakita181009/gas-plugin/compare/cli-v0.2.1...cli-v0.2.2) (2026-07-18)
+
+
+### Bug Fixes
+
+* add repository field for npm provenance publishing ([#65](https://github.com/wakita181009/gas-plugin/issues/65)) ([37a4f36](https://github.com/wakita181009/gas-plugin/commit/37a4f36ce5645ba47bb07fdfca12897df742ba30))
+
 ## [0.2.1](https://github.com/wakita181009/gas-plugin/compare/cli-v0.2.0...cli-v0.2.1) (2026-07-18)
 
 

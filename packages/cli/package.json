@@ -36,6 +36,11 @@
   ],
   "author": "wakita181009",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wakita181009/gas-plugin.git",
+    "directory": "packages/cli"
+  },
   "engines": {
     "node": ">=22"
   },

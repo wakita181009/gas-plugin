@@ -7,7 +7,7 @@ catalog:
   "@types/node": ^26.1.1
   "@vitest/coverage-v8": ^4.1.10
   esbuild: ^0.28.1
-  rollup: ^4.62.2
+  rollup: ^4.62.4
   typescript: ^6.0.3
   vite: ^8.1.5
   vite-plugin-dts: ^5.0.3

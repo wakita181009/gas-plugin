@@ -1,5 +1,10 @@
+import MagicString from "magic-string";
+import { parseSync, type Statement } from "oxc-parser";
+
+const DEFAULT_EXPORT_BINDING = "__gas_default__";
+
 /**
- * Strip `export` keyword from inline declarations.
+ * Strip `export` keyword from inline declarations using AST parsing.
  *
  * Handles patterns like:
  *   export function foo() { ... }
@@ -13,43 +18,91 @@
  * These become bare top-level declarations that GAS can call.
  */
 export function stripExportKeywords(code: string): string {
-  let result = code;
+  const result = parseSync("bundle.ts", code);
+  if (!result.program || result.program.body.length === 0) {
+    return code;
+  }
 
-  result = result.replace(/^export\s+(function\s)/gm, "$1");
-  result = result.replace(/^export\s+(async\s+function\s)/gm, "$1");
-  result = result.replace(/^export\s+(const\s)/gm, "$1");
-  result = result.replace(/^export\s+(let\s)/gm, "$1");
-  result = result.replace(/^export\s+(var\s)/gm, "$1");
-  result = result.replace(/^export\s+(class\s)/gm, "$1");
-  result = result.replace(/^export\s+(abstract\s+class\s)/gm, "$1");
+  const s = new MagicString(code);
+  let changed = false;
 
-  return result;
+  for (const node of result.program.body) {
+    if (node.type === "ExportNamedDeclaration" && node.declaration) {
+      // Preserve contract: only strip if export keyword starts at the beginning of a line
+      const prevChar = node.start > 0 ? code[node.start - 1] : "\n";
+      if (node.start !== 0 && prevChar !== "\n" && prevChar !== "\r") {
+        continue;
+      }
+
+      const decl = node.declaration;
+      s.remove(node.start, decl.start);
+      changed = true;
+    }
+  }
+
+  return changed ? s.toString() : code;
+}
+
+function transformDefaultExport(node: Statement, s: MagicString): void {
+  if (node.type !== "ExportDefaultDeclaration") return;
+  const decl = node.declaration;
+
+  const isNamedDecl =
+    (decl.type === "FunctionDeclaration" || decl.type === "ClassDeclaration") &&
+    "id" in decl &&
+    Boolean(decl.id);
+
+  if (isNamedDecl) {
+    s.remove(node.start, decl.start);
+  } else {
+    s.overwrite(node.start, decl.start, `const ${DEFAULT_EXPORT_BINDING} = `);
+  }
+}
+
+function transformExportBlockNode(node: Statement, code: string, s: MagicString): boolean {
+  if (node.type === "ExportNamedDeclaration" && !node.declaration) {
+    let end = node.end;
+    if (code[end] === "\n") end += 1;
+    s.remove(node.start, end);
+    return true;
+  }
+
+  if (node.type === "ExportDefaultDeclaration") {
+    transformDefaultExport(node, s);
+    return true;
+  }
+
+  if (node.type === "ExportAllDeclaration") {
+    let end = node.end;
+    if (code[end] === "\n") end += 1;
+    s.remove(node.start, end);
+    return true;
+  }
+
+  return false;
 }
 
 /**
- * Remove remaining export blocks from bundled output:
- *   - `export { foo, bar };`
- *   - `export default expression;`
- *
- * Vite library mode typically generates `export { ... }` blocks
- * at the end of the output after all declarations.
+ * Remove remaining export blocks and transform default exports from bundled output:
+ *   - `export { foo, bar };` -> removed
+ *   - `export default function foo() {}` -> `function foo() {}`
+ *   - `export default class Foo {}` -> `class Foo {}`
+ *   - `export default expression;` -> `const __gas_default__ = expression;`
  */
 export function removeExportBlocks(code: string): string {
-  let result = code;
-  const defaultExportBinding = "__gas_default__";
+  const result = parseSync("bundle.ts", code);
+  if (!result.program || result.program.body.length === 0) {
+    return code;
+  }
 
-  // Remove `export { ... };`
-  result = result.replace(/^export\s*\{[^}]*\}\s*;?\s*$/gm, "");
+  const s = new MagicString(code);
+  let changed = false;
 
-  // Preserve named declarations as top-level function/class declarations.
-  result = result.replace(
-    /^export\s+default\s+((?:async\s+)?function(?:\s*\*)?\s+[A-Za-z_$][\w$]*)/gm,
-    "$1",
-  );
-  result = result.replace(/^export\s+default\s+(class\s+[A-Za-z_$][\w$]*)/gm, "$1");
+  for (const node of result.program.body) {
+    if (transformExportBlockNode(node, code, s)) {
+      changed = true;
+    }
+  }
 
-  // Convert remaining default exports into a valid assignment.
-  result = result.replace(/^export\s+default\s+/gm, `const ${defaultExportBinding} = `);
-
-  return result;
+  return changed ? s.toString() : code;
 }

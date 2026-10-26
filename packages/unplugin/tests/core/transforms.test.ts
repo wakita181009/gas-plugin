@@ -147,4 +147,23 @@ describe("removeExportBlocks", () => {
     const result = removeExportBlocks(input);
     expect(result).toBe("function foo() {}\n");
   });
+
+  it("removes multiline export block correctly", () => {
+    const input = [
+      "function foo() {}",
+      "function bar() {}",
+      "export {",
+      "  foo,",
+      "  bar as baz,",
+      "};",
+    ].join("\n");
+    const result = removeExportBlocks(input);
+    expect(result.trim()).toBe("function foo() {}\nfunction bar() {}");
+  });
+
+  it("removes export all declaration", () => {
+    const input = "function foo() {}\nexport * from './other';";
+    const result = removeExportBlocks(input);
+    expect(result.trim()).toBe("function foo() {}");
+  });
 });

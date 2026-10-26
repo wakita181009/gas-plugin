@@ -66,6 +66,8 @@
     "node": ">=22"
   },
   "dependencies": {
+    "magic-string": "^1.4.3",
+    "oxc-parser": "^0.155.0",
     "tinyglobby": "^0.2.17",
     "unplugin": "^3.3.0"
   },

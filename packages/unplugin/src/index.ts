@@ -29,6 +29,7 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
 
   let rootDir = process.cwd();
   let outDir = "dist";
+  let outFile: string | undefined;
   // Vite/Rollup/webpack handle post-processing and file copy in their own hooks.
   // writeBundle is a universal fallback for esbuild/Bun only.
   let handledByFramework = false;
@@ -116,17 +117,27 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
     }
   }
 
+  function postProcessFile(filePath: string) {
+    const content = readFileSync(filePath, "utf-8");
+    const processed = postProcessBundle(content);
+    if (processed !== content) {
+      writeFileSync(filePath, processed, "utf-8");
+    }
+  }
+
   function postProcessOutputFiles() {
+    if (outFile && existsSync(outFile)) {
+      postProcessFile(outFile);
+      return;
+    }
+
     const resolvedOutDir = resolveOutDir();
+    if (!existsSync(resolvedOutDir)) return;
     const files = readdirSync(resolvedOutDir);
 
     for (const file of files) {
-      if (!/\.[jt]sx?$/.test(file)) continue;
-      const filePath = resolve(resolvedOutDir, file);
-      const content = readFileSync(filePath, "utf-8");
-      const processed = postProcessBundle(content);
-      if (processed !== content) {
-        writeFileSync(filePath, processed, "utf-8");
+      if (/\.[jt]sx?$/.test(file)) {
+        postProcessFile(resolve(resolvedOutDir, file));
       }
     }
   }
@@ -259,6 +270,14 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
     esbuild: {
       setup(build: EsbuildPluginBuild) {
         const opts = build.initialOptions;
+        if (!opts.format) {
+          opts.format = "esm";
+        } else if (opts.format === "iife") {
+          console.warn(
+            `[${PLUGIN_NAME}] esbuild format "iife" wraps output in a closure, preventing GAS from detecting global triggers. Consider using format "esm".`,
+          );
+        }
+
         const firstEntry = extractFirstInput(opts.entryPoints);
         if (firstEntry) {
           rootDir = findRootDir(firstEntry, manifest);
@@ -266,7 +285,8 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
         if (opts.outdir) {
           outDir = resolve(opts.outdir);
         } else if (opts.outfile) {
-          outDir = dirname(resolve(opts.outfile));
+          outFile = resolve(opts.outfile);
+          outDir = dirname(outFile);
         }
       },
     },

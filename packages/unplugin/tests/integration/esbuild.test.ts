@@ -71,4 +71,60 @@ export function getData() {
     expect(output).not.toContain("__gas_keep__");
     expect(output).not.toContain("__GAS_GLOBALS__");
   });
+
+  it("defaults format to esm when omitted and strips exports without IIFE wrapper", async () => {
+    const esbuild = await import("esbuild");
+    const gasPlugin = (await import("../../src/esbuild.js")).default;
+
+    const dir = createFixture("default-format", {
+      "src/main.ts": `
+export function onOpen() {
+  console.log("auto format");
+}
+`,
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+    });
+
+    await esbuild.build({
+      entryPoints: [resolve(dir, "src/main.ts")],
+      bundle: true,
+      outdir: resolve(dir, "dist"),
+      entryNames: "Code",
+      // format intentionally omitted
+      plugins: [gasPlugin()],
+      logLevel: "silent",
+    });
+
+    const output = readOutput(dir);
+    expect(output).not.toMatch(/^export\s/m);
+    expect(output).toMatch(/^function onOpen\(\)/m);
+    expect(output).not.toMatch(/^\(\(\) => \{/m);
+  });
+
+  it("supports outfile destination option", async () => {
+    const esbuild = await import("esbuild");
+    const gasPlugin = (await import("../../src/esbuild.js")).default;
+
+    const dir = createFixture("outfile", {
+      "src/main.ts": `
+export function onOpen() {
+  console.log("outfile test");
+}
+`,
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+    });
+
+    await esbuild.build({
+      entryPoints: [resolve(dir, "src/main.ts")],
+      bundle: true,
+      outfile: resolve(dir, "dist/CustomCode.js"),
+      plugins: [gasPlugin()],
+      logLevel: "silent",
+    });
+
+    const output = readOutput(dir, "CustomCode.js");
+    expect(output).not.toMatch(/^export\s/m);
+    expect(output).toMatch(/^function onOpen\(\)/m);
+    expect(outputExists(dir, "appsscript.json")).toBe(true);
+  });
 });

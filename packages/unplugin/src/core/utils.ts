@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { postProcessBundle } from "./post-process.js";
+import { validateGasSyntax } from "./validate.js";
 
 /**
  * Extract the first input file path from various input formats.
@@ -34,14 +35,23 @@ export function findRootDir(filePath: string, manifestPath: string): string {
   return dirname(dirname(resolve(filePath)));
 }
 
+export interface ProcessBundleOptions {
+  validate?: boolean;
+}
+
 /**
- * Post-process generated bundle chunks in-memory.
+ * Post-process generated bundle chunks in-memory and validate GAS compatibility.
  */
 // biome-ignore lint/suspicious/noExplicitAny: Bundle types vary across Vite/Rollup versions
-export function processBundle(bundle: any) {
+export function processBundle(bundle: any, options: ProcessBundleOptions = {}) {
+  const shouldValidate = options.validate !== false;
+
   for (const chunk of Object.values(bundle)) {
     const c = chunk as { type: string; code?: string };
     if (c.type !== "chunk" || !c.code) continue;
     c.code = postProcessBundle(c.code);
+    if (shouldValidate) {
+      validateGasSyntax(c.code);
+    }
   }
 }

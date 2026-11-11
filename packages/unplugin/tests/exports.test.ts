@@ -38,5 +38,7 @@ describe("subpath exports", () => {
     expect(typeof mod.postProcessBundle).toBe("function");
     expect(typeof mod.stripExportKeywords).toBe("function");
     expect(typeof mod.removeExportBlocks).toBe("function");
+    expect(typeof mod.findGasSyntaxIssues).toBe("function");
+    expect(typeof mod.validateGasSyntax).toBe("function");
   });
 });

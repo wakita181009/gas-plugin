@@ -47,4 +47,13 @@ export interface GasPluginOptions {
    * @default true
    */
   autoGlobals?: boolean;
+
+  /**
+   * When `true` (default), validates that bundled JavaScript output uses only
+   * syntax accepted by Google Apps Script's V8 parser (ES2020 without BigInt
+   * literals) and throws if unsupported syntax is detected.
+   *
+   * @default true
+   */
+  validate?: boolean;
 }

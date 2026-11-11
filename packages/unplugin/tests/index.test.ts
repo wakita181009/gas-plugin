@@ -209,6 +209,28 @@ describe("unpluginFactory", () => {
       expect(readFileSync(resolve(outDir, "data.json"), "utf-8")).toBe('{"key": "value"}');
     });
 
+    it("validates JS output files in writeBundle unless validate is false", () => {
+      const { dir, outDir } = setupFixture("write-bundle-validate", {
+        outFiles: {
+          "Code.js": "function onOpen() { return 10n; }\n",
+        },
+      });
+
+      const strictPlugin = unpluginFactory();
+      callEsbuildSetup(strictPlugin, {
+        entryPoints: [resolve(dir, "src/main.ts")],
+        outdir: outDir,
+      });
+      expect(() => callWriteBundle(strictPlugin)).toThrow(/BigInt literal/);
+
+      const relaxedPlugin = unpluginFactory({ validate: false });
+      callEsbuildSetup(relaxedPlugin, {
+        entryPoints: [resolve(dir, "src/main.ts")],
+        outdir: outDir,
+      });
+      expect(() => callWriteBundle(relaxedPlugin)).not.toThrow();
+    });
+
     it("is skipped when handledByFramework is true", () => {
       const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
 

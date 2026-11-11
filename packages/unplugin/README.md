@@ -151,6 +151,14 @@ interface GasPluginOptions {
    * @default true
    */
   autoGlobals?: boolean;
+
+  /**
+   * When true (default), validates that bundled JavaScript output uses only
+   * syntax accepted by Google Apps Script's V8 parser (ES2020 without BigInt
+   * literals) and throws if unsupported syntax is detected.
+   * @default true
+   */
+  validate?: boolean;
 }
 ```
 
@@ -203,7 +211,7 @@ export default defineConfig({
 
 1. **Transform phase**: Detects exported function declarations and injects tree-shake protection markers (`globalThis.__gas_keep__`) to prevent bundlers from removing GAS entry points.
 
-2. **Post-process phase**: After bundling, strips all `export` keywords and `export { ... }` blocks, removes the tree-shake protection markers, and normalizes trailing newlines.
+2. **Post-process & validate phase**: After bundling, strips all `export` keywords and `export { ... }` blocks, removes the tree-shake protection markers, normalizes trailing newlines, and validates the output AST against Google Apps Script's parser limits (ES2020 without BigInt literals).
 
 3. **File copy phase**: Copies `appsscript.json` and any files matching `include` patterns to the output directory.
 

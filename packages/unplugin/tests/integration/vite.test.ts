@@ -134,4 +134,21 @@ export function onOpen() {
     // Should have readable function names (not mangled)
     expect(output).toContain("function onOpen()");
   });
+
+  it("fails build when BigInt literals remain in bundle unless validate is false", async () => {
+    const dir = createFixture("bigint-validation", {
+      "src/main.ts": `
+export function getBig() {
+  return 123n;
+}
+`,
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+    });
+
+    await expect(buildWithVite(dir)).rejects.toThrow(/BigInt literal/);
+
+    await buildWithVite(dir, { validate: false });
+    const output = readOutput(dir);
+    expect(output).toContain("123n");
+  });
 });

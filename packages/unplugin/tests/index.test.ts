@@ -255,8 +255,18 @@ describe("unpluginFactory", () => {
       // With Vite 8 installed, should return rolldownOptions-based config
       expect(result).toHaveProperty("build");
       const build = (result as { build: Record<string, unknown> }).build;
+      expect(build.target).toBe("es2020");
       expect(build.minify).toBe(false);
       expect(build).toHaveProperty("rolldownOptions");
+    });
+
+    it("preserves explicit build.target when provided", () => {
+      const plugin = unpluginFactory();
+      const viteConfig = (plugin.vite as unknown as ViteConfig).config;
+      const result = viteConfig({ build: { target: "es2022" } });
+
+      const build = (result as { build: Record<string, unknown> }).build;
+      expect(build.target).toBe("es2022");
     });
 
     it("handles build config with existing rolldownOptions and lib", () => {

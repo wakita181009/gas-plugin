@@ -147,4 +147,27 @@ describe("processBundle", () => {
     expect(bundle["a.js"].code).toBe("function a() {}\n");
     expect(bundle["b.js"].code).toBe("const b = 1;\n");
   });
+
+  it("throws on unsupported GAS syntax by default", () => {
+    const bundle = {
+      "main.js": {
+        type: "chunk",
+        code: "export const n = 10n;\n",
+      },
+    };
+
+    expect(() => processBundle(bundle)).toThrow(/BigInt literal/);
+  });
+
+  it("skips validation when validate is false", () => {
+    const bundle = {
+      "main.js": {
+        type: "chunk",
+        code: "export const n = 10n;\n",
+      },
+    };
+
+    processBundle(bundle, { validate: false });
+    expect(bundle["main.js"].code).toBe("const n = 10n;\n");
+  });
 });

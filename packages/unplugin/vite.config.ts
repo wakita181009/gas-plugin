@@ -28,6 +28,7 @@ export default defineConfig({
         "node:path",
         "node:fs/promises",
         "tinyglobby",
+        "oxc-parser",
       ],
       output: {
         exports: "named",

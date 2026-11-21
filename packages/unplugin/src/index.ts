@@ -131,7 +131,7 @@ export const unpluginFactory = (
     const files = readdirSync(resolvedOutDir);
 
     for (const file of files) {
-      if (!/\.[jt]sx?$/.test(file)) continue;
+      if (!/\.[jt]sx?$/.test(file) || file.endsWith(".d.ts")) continue;
       const filePath = resolve(resolvedOutDir, file);
       const content = readFileSync(filePath, "utf-8");
       const processed = postProcessBundle(content);
@@ -151,9 +151,12 @@ export const unpluginFactory = (
       }
     },
 
-    outputOptions(outputOptions: { dir?: string }) {
+    outputOptions(outputOptions: { dir?: string; inlineDynamicImports?: boolean }) {
       if (outputOptions.dir) {
         outDir = resolve(outputOptions.dir);
+      }
+      if (outputOptions.inlineDynamicImports === undefined) {
+        outputOptions.inlineDynamicImports = true;
       }
     },
 

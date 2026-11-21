@@ -225,6 +225,33 @@ describe("unpluginFactory", () => {
       // Should NOT warn since writeBundle is a no-op
       expect(warnSpy).not.toHaveBeenCalled();
     });
+
+    it("is skipped when meta.framework handles lifecycle hooks natively", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+      for (const framework of ["vite", "rollup", "rolldown", "webpack", "rspack"] as const) {
+        warnSpy.mockClear();
+        const plugin = unpluginFactory({ globals: ["test"] }, { framework });
+        callWriteBundle(plugin);
+        expect(warnSpy).not.toHaveBeenCalled();
+      }
+    });
+
+    it("executes writeBundle when meta.framework is esbuild or bun", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+      const { dir, outDir } = setupFixture("meta-fallback", { outDir: true });
+
+      for (const framework of ["esbuild", "bun"] as const) {
+        warnSpy.mockClear();
+        const plugin = unpluginFactory({ globals: ["test"] }, { framework });
+        callEsbuildSetup(plugin, {
+          entryPoints: [resolve(dir, "src/main.ts")],
+          outdir: outDir,
+        });
+        callWriteBundle(plugin);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("test"));
+      }
+    });
   });
 
   describe("esbuild outfile support", () => {

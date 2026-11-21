@@ -9,7 +9,7 @@ import {
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import type { PluginBuild as EsbuildPluginBuild } from "esbuild";
-import { createUnplugin, type UnpluginOptions } from "unplugin";
+import { createUnplugin, type UnpluginContextMeta, type UnpluginOptions } from "unplugin";
 import type { BuildEnvironmentOptions, UserConfig as ViteUserConfig } from "vite";
 import { detectNamesToProtect } from "./core/globals.js";
 import { copyFilesFlat, resolveIncludeFiles } from "./core/include.js";
@@ -18,20 +18,26 @@ import { removeExportBlocks, stripExportKeywords } from "./core/transforms.js";
 import type { GasPluginOptions, WebpackCompiler } from "./core/types.js";
 import { extractFirstInput, findRootDir, processBundle } from "./core/utils.js";
 
-export type { GasPluginOptions };
+export type { GasPluginOptions, UnpluginContextMeta, UnpluginOptions };
 export { postProcessBundle, removeExportBlocks, stripExportKeywords };
 
 const GLOBALS_MARKER = "/* __GAS_GLOBALS__ */";
 const PLUGIN_NAME = "@gas-plugin/unplugin";
 
-export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions => {
+export const unpluginFactory = (
+  options: GasPluginOptions = {},
+  meta: Partial<UnpluginContextMeta> = {},
+): UnpluginOptions => {
   const { manifest = "appsscript.json", include = [], globals = [], autoGlobals = true } = options;
 
   let rootDir = process.cwd();
   let outDir = "dist";
-  // Vite/Rollup/webpack handle post-processing and file copy in their own hooks.
-  // writeBundle is a universal fallback for esbuild/Bun only.
-  let handledByFramework = false;
+  // Frameworks with native lifecycle hooks (Vite, Rollup, Rolldown, webpack) handle
+  // post-processing and file copy in their own hooks.
+  // writeBundle is a universal fallback for esbuild and Bun only.
+  let handledByFramework = Boolean(
+    meta.framework && meta.framework !== "esbuild" && meta.framework !== "bun",
+  );
   const matchedGlobals = new Set<string>();
 
   function resolveOutDir(): string {
@@ -118,6 +124,7 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
 
   function postProcessOutputFiles() {
     const resolvedOutDir = resolveOutDir();
+    if (!existsSync(resolvedOutDir)) return;
     const files = readdirSync(resolvedOutDir);
 
     for (const file of files) {

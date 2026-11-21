@@ -18,6 +18,8 @@ const DEFAULT_EXPORT_BINDING = "__gas_default__";
  * These become bare top-level declarations that GAS can call.
  */
 export function stripExportKeywords(code: string): string {
+  if (!code.includes("export")) return code;
+
   const result = parseSync("bundle.ts", code);
   if (!result.program || result.program.body.length === 0) {
     return code;
@@ -90,6 +92,8 @@ function transformExportBlockNode(node: Statement, code: string, s: MagicString)
  *   - `export default expression;` -> `const __gas_default__ = expression;`
  */
 export function removeExportBlocks(code: string): string {
+  if (!code.includes("export")) return code;
+
   const result = parseSync("bundle.ts", code);
   if (!result.program || result.program.body.length === 0) {
     return code;
@@ -143,10 +147,47 @@ function transformExportNode(node: Statement, code: string, s: MagicString): boo
   return false;
 }
 
+function isKeepStatement(node: Statement): boolean {
+  if (node.type !== "ExpressionStatement") return false;
+  const expr = node.expression;
+  if (expr.type !== "AssignmentExpression") return false;
+  const left = expr.left;
+  if (left.type === "MemberExpression") {
+    return (
+      (left.property.type === "Identifier" && left.property.name === "__gas_keep__") ||
+      (left.property.type === "Literal" &&
+        (left.property as { value?: unknown }).value === "__gas_keep__")
+    );
+  }
+  if (left.type === "Identifier") {
+    return left.name === "__gas_keep__";
+  }
+  return false;
+}
+
+function removeStatementLine(node: Statement, code: string, s: MagicString): void {
+  let start = node.start;
+  while (start > 0 && code[start - 1] !== "\n" && code[start - 1] !== "\r") {
+    start--;
+  }
+  let end = node.end;
+  if (code[end] === "\r" && code[end + 1] === "\n") {
+    end += 2;
+  } else if (code[end] === "\n") {
+    end += 1;
+  }
+  s.remove(start, end);
+}
+
 /**
- * Strip both inline export keywords and export blocks in a single AST traversal pass.
+ * Strip both inline export keywords, export blocks, and tree-shake protection markers
+ * in a single AST traversal pass.
  */
 export function stripExports(code: string): string {
+  if (!(code.includes("export") || code.includes("__gas_keep__"))) {
+    return code;
+  }
+
   const result = parseSync("bundle.ts", code);
   if (!result.program || result.program.body.length === 0) {
     return code;
@@ -157,6 +198,9 @@ export function stripExports(code: string): string {
 
   for (const node of result.program.body) {
     if (transformExportNode(node, code, s)) {
+      changed = true;
+    } else if (isKeepStatement(node)) {
+      removeStatementLine(node, code, s);
       changed = true;
     }
   }

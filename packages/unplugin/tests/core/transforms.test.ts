@@ -195,6 +195,16 @@ describe("stripExports (single-pass AST transformation)", () => {
     expect(result).toBe("const __gas_default__ = { hello: 'world' };");
   });
 
+  it("removes globals marker injections in the same pass", () => {
+    const input = [
+      "export function doGet() {}",
+      "/* __GAS_GLOBALS__ */ globalThis.__gas_keep__ = [doGet];",
+      "export { doGet };",
+    ].join("\n");
+    const result = stripExports(input);
+    expect(result.trim()).toBe("function doGet() {}");
+  });
+
   it("handles empty or export-free code unchanged", () => {
     const input = "function foo() {}\nconst bar = 42;";
     expect(stripExports(input)).toBe(input);

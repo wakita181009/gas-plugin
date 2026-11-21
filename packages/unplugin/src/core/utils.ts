@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { postProcessBundle } from "./post-process.js";
+import { type PostProcessOptions, postProcessBundle } from "./post-process.js";
 
 /**
  * Extract the first input file path from various input formats.
@@ -34,14 +34,16 @@ export function findRootDir(filePath: string, manifestPath: string): string {
   return dirname(dirname(resolve(filePath)));
 }
 
+export type ProcessBundleOptions = PostProcessOptions;
+
 /**
  * Post-process generated bundle chunks in-memory.
  */
 // biome-ignore lint/suspicious/noExplicitAny: Bundle types vary across Vite/Rollup versions
-export function processBundle(bundle: any) {
+export function processBundle(bundle: any, options: ProcessBundleOptions = {}) {
   for (const chunk of Object.values(bundle)) {
     const c = chunk as { type: string; code?: string };
     if (c.type !== "chunk" || !c.code) continue;
-    c.code = postProcessBundle(c.code);
+    c.code = postProcessBundle(c.code, options);
   }
 }

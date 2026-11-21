@@ -154,4 +154,24 @@ export function compute(input?: number) {
     expect(output).not.toContain("??=");
     expect(output).not.toContain("1_000_000");
   });
+
+  it("downlevels BigInt literals to BigInt() constructor calls", async () => {
+    const dir = createFixture("bigint-downlevel", {
+      "src/main.ts": `
+export function getBig(offset: bigint) {
+  const a = 12345678901234567890n;
+  return a + offset + 10n;
+}
+`,
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+    });
+
+    await buildWithVite(dir);
+    const output = readOutput(dir);
+
+    expect(output).toContain("function getBig(");
+    expect(output).toContain('BigInt("12345678901234567890")');
+    expect(output).toContain('BigInt("10")');
+    expect(output).not.toMatch(/\b\d+n\b/);
+  });
 });

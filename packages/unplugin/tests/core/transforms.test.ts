@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { removeExportBlocks, stripExportKeywords, stripExports } from "../../src";
+import {
+  removeExportBlocks,
+  stripExportKeywords,
+  stripExports,
+  transformBigIntLiterals,
+} from "../../src";
 
 describe("stripExportKeywords", () => {
   it("strips export from function declarations", () => {
@@ -205,9 +210,68 @@ describe("stripExports (single-pass AST transformation)", () => {
     expect(result.trim()).toBe("function doGet() {}");
   });
 
+  it("strips exports and downlevels BigInt literals in the same pass", () => {
+    const input = [
+      "export const limit = 100n;",
+      "export function check(x) { return x > 0n; }",
+    ].join("\n");
+    const result = stripExports(input);
+    expect(result).toBe(
+      ['const limit = BigInt("100");', 'function check(x) { return x > BigInt("0"); }'].join("\n"),
+    );
+  });
+
   it("handles empty or export-free code unchanged", () => {
     const input = "function foo() {}\nconst bar = 42;";
     expect(stripExports(input)).toBe(input);
     expect(stripExports("")).toBe("");
+  });
+});
+
+describe("transformBigIntLiterals", () => {
+  it("transforms decimal BigInt literals to BigInt() calls", () => {
+    const input = "const a = 10n;\nconst b = 0n;";
+    const result = transformBigIntLiterals(input);
+    expect(result).toBe('const a = BigInt("10");\nconst b = BigInt("0");');
+  });
+
+  it("transforms large arbitrary-precision BigInt literals", () => {
+    const input = "const big = 123456789012345678901234567890n;";
+    const result = transformBigIntLiterals(input);
+    expect(result).toBe('const big = BigInt("123456789012345678901234567890");');
+  });
+
+  it("normalizes BigInt literals with numeric separators", () => {
+    const input = "const val = 1_000_000n;";
+    const result = transformBigIntLiterals(input);
+    expect(result).toBe('const val = BigInt("1000000");');
+  });
+
+  it("normalizes hex, octal, and binary BigInt literals", () => {
+    const input = "const h = 0x10n;\nconst o = 0o12n;\nconst b = 0b1010n;";
+    const result = transformBigIntLiterals(input);
+    expect(result).toBe(
+      'const h = BigInt("16");\nconst o = BigInt("10");\nconst b = BigInt("10");',
+    );
+  });
+
+  it("transforms negative BigInt expressions", () => {
+    const input = "const neg = -42n;";
+    const result = transformBigIntLiterals(input);
+    expect(result).toBe('const neg = -BigInt("42");');
+  });
+
+  it("transforms BigInt inside arithmetic and object expressions", () => {
+    const input = 'const sum = 1n + 2n;\nconst map = { [1n]: "first" };';
+    const result = transformBigIntLiterals(input);
+    expect(result).toBe(
+      'const sum = BigInt("1") + BigInt("2");\nconst map = { [BigInt("1")]: "first" };',
+    );
+  });
+
+  it("returns code unchanged when no BigInt literals exist", () => {
+    const input = "const a = 10;\nfunction test() { return 'not bigint'; }";
+    const result = transformBigIntLiterals(input);
+    expect(result).toBe(input);
   });
 });

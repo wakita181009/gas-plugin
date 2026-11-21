@@ -106,3 +106,60 @@ export function removeExportBlocks(code: string): string {
 
   return changed ? s.toString() : code;
 }
+
+function transformExportNamed(
+  node: Extract<Statement, { type: "ExportNamedDeclaration" }>,
+  code: string,
+  s: MagicString,
+): boolean {
+  if (node.declaration) {
+    const prevChar = node.start > 0 ? code[node.start - 1] : "\n";
+    if (node.start !== 0 && prevChar !== "\n" && prevChar !== "\r") {
+      return false;
+    }
+    s.remove(node.start, node.declaration.start);
+    return true;
+  }
+  let end = node.end;
+  if (code[end] === "\n") end += 1;
+  s.remove(node.start, end);
+  return true;
+}
+
+function transformExportNode(node: Statement, code: string, s: MagicString): boolean {
+  if (node.type === "ExportNamedDeclaration") {
+    return transformExportNamed(node, code, s);
+  }
+  if (node.type === "ExportDefaultDeclaration") {
+    transformDefaultExport(node, s);
+    return true;
+  }
+  if (node.type === "ExportAllDeclaration") {
+    let end = node.end;
+    if (code[end] === "\n") end += 1;
+    s.remove(node.start, end);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Strip both inline export keywords and export blocks in a single AST traversal pass.
+ */
+export function stripExports(code: string): string {
+  const result = parseSync("bundle.ts", code);
+  if (!result.program || result.program.body.length === 0) {
+    return code;
+  }
+
+  const s = new MagicString(code);
+  let changed = false;
+
+  for (const node of result.program.body) {
+    if (transformExportNode(node, code, s)) {
+      changed = true;
+    }
+  }
+
+  return changed ? s.toString() : code;
+}

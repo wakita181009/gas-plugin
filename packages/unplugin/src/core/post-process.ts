@@ -1,4 +1,4 @@
-import { removeExportBlocks, stripExportKeywords } from "./transforms.js";
+import { stripExports } from "./transforms.js";
 
 // Match markers with or without the comment prefix (bundlers may strip comments)
 const GLOBALS_MARKER_RE =
@@ -7,9 +7,8 @@ const GLOBALS_MARKER_RE =
 /**
  * Post-process a bundled code string:
  * 1. Remove tree-shake protection injections (globalThis.__gas_keep__ markers)
- * 2. Strip inline export keywords
- * 3. Remove export blocks
- * 4. Normalize trailing newline
+ * 2. Strip export keywords and blocks in a single AST traversal pass
+ * 3. Normalize trailing newline
  */
 export function postProcessBundle(code: string): string {
   let result = code;
@@ -18,8 +17,7 @@ export function postProcessBundle(code: string): string {
   result = result.replace(GLOBALS_MARKER_RE, "");
 
   // Strip export keywords and blocks
-  result = stripExportKeywords(result);
-  result = removeExportBlocks(result);
+  result = stripExports(result);
 
   // Normalize trailing newline
   return `${result.trimEnd()}\n`;

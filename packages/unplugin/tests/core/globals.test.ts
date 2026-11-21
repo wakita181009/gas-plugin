@@ -38,6 +38,66 @@ describe("detectNamesToProtect", () => {
       const result = detectNamesToProtect(code, [], true);
       expect(result).toEqual(["MyService"]);
     });
+
+    it("detects export specifier lists (export { a, b })", () => {
+      const code = "function fnA() {}\nconst constB = 42;\nexport { fnA, constB };";
+      const result = detectNamesToProtect(code, [], true);
+      expect(result).toEqual(["fnA", "constB"]);
+    });
+
+    it("detects aliased export specifiers by local binding name", () => {
+      const code = "function realFn() {}\nexport { realFn as aliasFn };";
+      const result = detectNamesToProtect(code, [], true);
+      expect(result).toEqual(["realFn"]);
+    });
+
+    it("detects named default function and class exports", () => {
+      const code = "export default function defaultHandler() {}";
+      const result = detectNamesToProtect(code, [], true);
+      expect(result).toEqual(["defaultHandler"]);
+
+      const codeClass = "export default class DefaultApp {}";
+      const resultClass = detectNamesToProtect(codeClass, [], true);
+      expect(resultClass).toEqual(["DefaultApp"]);
+    });
+
+    it("detects destructuring variable declarations in exports", () => {
+      const code =
+        "export const [first, second] = [1, 2];\nexport const { key, nested: { prop } } = obj;";
+      const result = detectNamesToProtect(code, [], true);
+      expect(result).toEqual(["first", "second", "key", "prop"]);
+    });
+
+    it("ignores exports in comments and strings", () => {
+      const code = `
+        // export function commentedFn() {}
+        /*
+          export const commentedConst = 1;
+        */
+        const msg = "export function fakeInString() {}";
+        export function realFn() {}
+      `;
+      const result = detectNamesToProtect(code, [], true);
+      expect(result).toEqual(["realFn"]);
+    });
+
+    it("ignores TypeScript type-only exports", () => {
+      const code = `
+        export type MyType = string;
+        export interface MyInterface { prop: number; }
+        const val = 1;
+        type LocalType = number;
+        export { type LocalType, val };
+      `;
+      const result = detectNamesToProtect(code, [], true);
+      expect(result).toEqual(["val"]);
+    });
+
+    it("ignores re-exports from external modules", () => {
+      const code = "export { externalFn } from './other.js';";
+      const result = detectNamesToProtect(code, [], true);
+      expect(result).toEqual([]);
+    });
   });
 
   describe("autoGlobals: false", () => {
@@ -59,6 +119,17 @@ describe("detectNamesToProtect", () => {
       const code = "function onOpen() {}";
       const result = detectNamesToProtect(code, ["onOpen", "notDeclared"], true);
       expect(result).toEqual(["onOpen"]);
+    });
+
+    it("filters out identifiers declared inside nested function scopes", () => {
+      const code = `
+        function outer() {
+          const innerVar = 10;
+          return innerVar;
+        }
+      `;
+      const result = detectNamesToProtect(code, ["innerVar"], false);
+      expect(result).toEqual([]);
     });
 
     it("returns empty array when no globals and no exports", () => {
@@ -84,7 +155,6 @@ describe("detectNamesToProtect", () => {
 
   describe("regex safety", () => {
     it("handles names with regex-special characters in globals gracefully", () => {
-      // Names with special chars won't match typical declarations, so they are filtered out
       const code = "function normal() {}";
       const result = detectNamesToProtect(code, ["func.name", "a+b"], true);
       expect(result).toEqual([]);

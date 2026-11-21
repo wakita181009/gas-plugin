@@ -119,4 +119,20 @@ describe("Vite legacy config (Vite < 8)", () => {
     const build = (result as { build: Record<string, unknown> }).build;
     expect(build).toHaveProperty("rolldownOptions");
   });
+
+  it("detects Vite major version from meta.versions.vite", () => {
+    const pluginLegacy = unpluginFactory({}, { versions: { vite: "5.4.0" } });
+    const configLegacy = (pluginLegacy.vite as unknown as ViteConfig).config;
+    const resultLegacy = configLegacy({ build: {} });
+    expect((resultLegacy as { build: Record<string, unknown> }).build).toHaveProperty(
+      "rollupOptions",
+    );
+
+    const pluginVite8 = unpluginFactory({}, { versions: { vite: "8.1.5" } });
+    const configVite8 = (pluginVite8.vite as unknown as ViteConfig).config;
+    const resultVite8 = configVite8({ build: {} });
+    expect((resultVite8 as { build: Record<string, unknown> }).build).toHaveProperty(
+      "rolldownOptions",
+    );
+  });
 });

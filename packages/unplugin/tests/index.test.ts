@@ -58,6 +58,10 @@ function callWebpack(plugin: UnpluginOptions, compiler: Record<string, unknown>)
   (plugin.webpack as (compiler: unknown) => void)(compiler);
 }
 
+function callRspack(plugin: UnpluginOptions, compiler: Record<string, unknown>) {
+  (plugin.rspack as (compiler: unknown) => void)(compiler);
+}
+
 function callWriteBundle(plugin: UnpluginOptions) {
   (plugin as { writeBundle: () => void }).writeBundle();
 }
@@ -131,6 +135,105 @@ describe("unpluginFactory", () => {
 
       // Should not throw
       callWebpack(plugin, mockCompiler);
+      expect(mockCompiler.hooks.afterEmit.tapAsync).toHaveBeenCalled();
+    });
+
+    it("processes assets in-memory via thisCompilation processAssets hook", () => {
+      const { dir, outDir } = setupFixture("webpack-in-memory", {
+        outDir: true,
+      });
+
+      const plugin = unpluginFactory();
+
+      let compilationCb: ((compilation: unknown) => void) | undefined;
+      let afterEmitCb: ((compilation: unknown, callback: () => void) => void) | undefined;
+      let processAssetsCb: ((assets: Record<string, unknown>) => void) | undefined;
+
+      const mockAsset = {
+        source: () =>
+          "export function onOpen() {}\n/* __GAS_GLOBALS__ */ globalThis.__gas_keep__ = [onOpen];\n",
+      };
+      const updateAssetMock = vi.fn();
+
+      const mockCompilation = {
+        // biome-ignore lint/style/useNamingConvention: Webpack constant name
+        PROCESS_ASSETS_STAGE_OPTIMIZE: 100,
+        hooks: {
+          processAssets: {
+            tap: vi.fn((_opts: unknown, cb: (assets: Record<string, unknown>) => void) => {
+              processAssetsCb = cb;
+            }),
+          },
+        },
+        updateAsset: updateAssetMock,
+      };
+
+      const mockCompiler = {
+        options: {
+          context: dir,
+          output: { path: outDir },
+        },
+        hooks: {
+          thisCompilation: {
+            tap: vi.fn((_name: string, cb: (compilation: unknown) => void) => {
+              compilationCb = cb;
+            }),
+          },
+          afterEmit: {
+            tapAsync: vi.fn(
+              (_name: string, cb: (compilation: unknown, callback: () => void) => void) => {
+                afterEmitCb = cb;
+              },
+            ),
+          },
+        },
+      };
+
+      callWebpack(plugin, mockCompiler);
+
+      // Trigger compilation hook
+      compilationCb?.(mockCompilation);
+      expect(mockCompilation.hooks.processAssets.tap).toHaveBeenCalled();
+
+      // Trigger processAssets hook
+      processAssetsCb?.({ "Code.js": mockAsset });
+      expect(updateAssetMock).toHaveBeenCalledWith(
+        "Code.js",
+        expect.objectContaining({
+          source: expect.any(Function),
+        }),
+      );
+
+      // Check updated source content
+      const updatedSourceFn = updateAssetMock.mock.calls[0][1].source;
+      const updatedCode = updatedSourceFn();
+      expect(updatedCode).not.toContain("__GAS_GLOBALS__");
+      expect(updatedCode).not.toContain("__gas_keep__");
+      expect(updatedCode).toContain("function onOpen()");
+
+      // Trigger afterEmit
+      const done = vi.fn();
+      afterEmitCb?.(null, done);
+      expect(done).toHaveBeenCalled();
+      expect(existsSync(resolve(outDir, "appsscript.json"))).toBe(true);
+    });
+
+    it("shares setup with rspack hook", () => {
+      const plugin = unpluginFactory();
+      expect(typeof plugin.rspack).toBe("function");
+      expect(plugin.rspack).toBe(plugin.webpack);
+
+      const mockCompiler = {
+        options: {
+          context: undefined,
+          output: { path: undefined },
+        },
+        hooks: {
+          afterEmit: { tapAsync: vi.fn() },
+        },
+      };
+
+      callRspack(plugin, mockCompiler);
       expect(mockCompiler.hooks.afterEmit.tapAsync).toHaveBeenCalled();
     });
   });
@@ -224,6 +327,33 @@ describe("unpluginFactory", () => {
 
       // Should NOT warn since writeBundle is a no-op
       expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("is skipped when meta.framework handles lifecycle hooks natively", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+      for (const framework of ["vite", "rollup", "rolldown", "webpack", "rspack"] as const) {
+        warnSpy.mockClear();
+        const plugin = unpluginFactory({ globals: ["test"] }, { framework });
+        callWriteBundle(plugin);
+        expect(warnSpy).not.toHaveBeenCalled();
+      }
+    });
+
+    it("executes writeBundle when meta.framework is esbuild or bun", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+      const { dir, outDir } = setupFixture("meta-fallback", { outDir: true });
+
+      for (const framework of ["esbuild", "bun"] as const) {
+        warnSpy.mockClear();
+        const plugin = unpluginFactory({ globals: ["test"] }, { framework });
+        callEsbuildSetup(plugin, {
+          entryPoints: [resolve(dir, "src/main.ts")],
+          outdir: outDir,
+        });
+        callWriteBundle(plugin);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("test"));
+      }
     });
   });
 

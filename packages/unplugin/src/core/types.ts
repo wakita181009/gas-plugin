@@ -1,14 +1,7 @@
-export interface WebpackCompiler {
-  options: {
-    context?: string;
-    output: { path?: string };
-  };
-  hooks: {
-    afterEmit: {
-      tapAsync: (name: string, cb: (compilation: unknown, callback: () => void) => void) => void;
-    };
-  };
-}
+import type { UnpluginOptions } from "unplugin";
+
+export type WebpackCompiler = Parameters<NonNullable<UnpluginOptions["webpack"]>>[0];
+export type RspackCompiler = Parameters<NonNullable<UnpluginOptions["rspack"]>>[0];
 
 export interface GasPluginOptions {
   /**

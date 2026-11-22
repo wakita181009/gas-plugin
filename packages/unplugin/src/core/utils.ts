@@ -20,7 +20,7 @@ export function extractFirstInput(input: unknown): string | undefined {
 
 /**
  * Walk up from a file path to find the directory containing the manifest.
- * Falls back to parent of parent (assuming src/ convention).
+ * Falls back to process.cwd() or parent directory.
  */
 export function findRootDir(filePath: string, manifestPath: string): string {
   let candidate = dirname(resolve(filePath));
@@ -30,6 +30,9 @@ export function findRootDir(filePath: string, manifestPath: string): string {
     }
     candidate = dirname(candidate);
   }
+  if (existsSync(resolve(process.cwd(), manifestPath))) {
+    return process.cwd();
+  }
   // Fallback: assume input is in src/, so root is one level up
   return dirname(dirname(resolve(filePath)));
 }
@@ -37,11 +40,18 @@ export function findRootDir(filePath: string, manifestPath: string): string {
 /**
  * Post-process generated bundle chunks in-memory.
  */
-// biome-ignore lint/suspicious/noExplicitAny: Bundle types vary across Vite/Rollup versions
-export function processBundle(bundle: any) {
-  for (const chunk of Object.values(bundle)) {
-    const c = chunk as { type: string; code?: string };
-    if (c.type !== "chunk" || !c.code) continue;
-    c.code = postProcessBundle(c.code);
+export function processBundle(bundle: unknown): void {
+  if (!bundle || typeof bundle !== "object") return;
+  for (const chunk of Object.values(bundle as Record<string, unknown>)) {
+    if (
+      chunk &&
+      typeof chunk === "object" &&
+      "type" in chunk &&
+      chunk.type === "chunk" &&
+      "code" in chunk &&
+      typeof chunk.code === "string"
+    ) {
+      chunk.code = postProcessBundle(chunk.code);
+    }
   }
 }

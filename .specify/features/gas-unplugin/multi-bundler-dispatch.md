@@ -10,7 +10,7 @@
 1. The plugin uses unplugin v3 `createUnplugin` to create a single factory that exposes `.vite`, `.rollup`, `.webpack`, `.esbuild`, `.bun` adapters.
 2. Each bundler adapter is exposed via a subpath export: `@gas-plugin/unplugin/vite`, `@gas-plugin/unplugin/rollup`, etc.
 3. The `transform` hook is universal — it runs for all bundlers via unplugin's `transform.filter` API (filters to `.js`/`.ts`/`.jsx`/`.tsx`, excludes virtual modules).
-4. A `handledByFramework` boolean flag prevents the `writeBundle` fallback from running when Vite, Rollup, or webpack already handled post-processing and file copy in their own hooks.
+4. `meta.framework` determines whether the framework handles lifecycle natively (Vite, Rollup, Rolldown, webpack), preventing the `writeBundle` fallback from running and keeping it exclusively for esbuild and Bun.
 5. **Root directory detection** varies per bundler:
    - Vite: `configResolved.root`
    - Rollup: `findRootDir(firstInput, manifest)` via `options` hook
@@ -62,7 +62,7 @@ No dedicated error conditions — each bundler path delegates to shared function
 
 | Method | Path/Interface | Description |
 |--------|---------------|-------------|
-| `unpluginFactory(options): UnpluginOptions` | `index.ts` | Creates the universal plugin instance |
+| `unpluginFactory(options, meta?): UnpluginOptions` | `index.ts` | Creates the universal plugin instance |
 | `createUnplugin(factory)` | `index.ts` | unplugin v3 factory — generates `.vite`, `.rollup`, `.webpack`, `.esbuild`, `.bun` |
 | Subpath exports | `package.json` `exports` field | `./vite`, `./rollup`, `./webpack`, `./esbuild`, `./bun` |
 

@@ -47,4 +47,13 @@ export interface GasPluginOptions {
    * @default true
    */
   autoGlobals?: boolean;
+
+  /**
+   * When `true` (default), BigInt literals (`10n`) in bundled output are downleveled
+   * to `BigInt("10")` constructor calls to work around Google Apps Script's
+   * server-side parser limitation. Set to `false` to preserve native BigInt literals.
+   *
+   * @default true
+   */
+  transformBigInt?: boolean;
 }

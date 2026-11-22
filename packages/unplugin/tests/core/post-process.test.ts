@@ -110,4 +110,16 @@ function c() {}
     expect(result).toContain("function b() {}");
     expect(result).toContain("function c() {}");
   });
+
+  it("downlevels BigInt literals by default", () => {
+    const input = "const a = 10n;\n";
+    const result = postProcessBundle(input);
+    expect(result).toBe('const a = BigInt("10");\n');
+  });
+
+  it("preserves BigInt literals when transformBigInt is false", () => {
+    const input = "const a = 10n;\n";
+    const result = postProcessBundle(input, { transformBigInt: false });
+    expect(result).toBe("const a = 10n;\n");
+  });
 });

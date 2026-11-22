@@ -27,6 +27,7 @@ describe("Vite legacy config (Vite < 8)", () => {
     const result = config({});
     const build = (result as { build: Record<string, unknown> }).build;
 
+    expect(build.target).toBe("es2020");
     expect(build.minify).toBe(false);
     expect(build).toHaveProperty("rollupOptions");
     expect(build).not.toHaveProperty("rolldownOptions");

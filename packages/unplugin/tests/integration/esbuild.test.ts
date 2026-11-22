@@ -71,4 +71,44 @@ export function getData() {
     expect(output).not.toContain("__gas_keep__");
     expect(output).not.toContain("__GAS_GLOBALS__");
   });
+
+  it("downlevels ES2021+ syntax via default es2020 target", async () => {
+    const dir = createFixture("es2020-downlevel", {
+      "src/main.ts": `
+export function compute(input?: number) {
+  let value = input;
+  value ??= 1_000_000;
+  return value;
+}
+`,
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+    });
+
+    await buildWithEsbuild(dir);
+    const output = readOutput(dir);
+
+    expect(output).toContain("function compute(");
+    expect(output).not.toContain("??=");
+    expect(output).not.toContain("1_000_000");
+  });
+
+  it("downlevels BigInt literals to BigInt() constructor calls", async () => {
+    const dir = createFixture("bigint-downlevel", {
+      "src/main.ts": `
+export function getBig(offset: bigint) {
+  const a = 12345678901234567890n;
+  return a + offset + 10n;
+}
+`,
+      "appsscript.json": '{ "timeZone": "Asia/Tokyo", "runtimeVersion": "V8" }',
+    });
+
+    await buildWithEsbuild(dir);
+    const output = readOutput(dir);
+
+    expect(output).toContain("function getBig(");
+    expect(output).toContain('BigInt("12345678901234567890")');
+    expect(output).toContain('BigInt("10")');
+    expect(output).not.toMatch(/\b\d+n\b/);
+  });
 });

@@ -21,6 +21,11 @@ describe("subpath exports", () => {
     expect(typeof mod.default).toBe("function");
   });
 
+  it("exports an rspack plugin factory from /rspack", async () => {
+    const mod = await import("../src/rspack.js");
+    expect(typeof mod.default).toBe("function");
+  });
+
   it("exports an esbuild plugin factory from /esbuild", async () => {
     const mod = await import("../src/esbuild.js");
     expect(typeof mod.default).toBe("function");

@@ -15,7 +15,7 @@ import { detectNamesToProtect } from "./core/globals.js";
 import { copyFilesFlat, resolveIncludeFiles } from "./core/include.js";
 import { postProcessBundle } from "./core/post-process.js";
 import { removeExportBlocks, stripExportKeywords } from "./core/transforms.js";
-import type { GasPluginOptions, WebpackCompiler } from "./core/types.js";
+import type { GasPluginOptions, RspackCompiler, WebpackCompiler } from "./core/types.js";
 import { extractFirstInput, findRootDir, processBundle } from "./core/utils.js";
 
 export type { GasPluginOptions, UnpluginContextMeta, UnpluginOptions };
@@ -170,6 +170,116 @@ export const unpluginFactory = (
     },
   };
 
+  function updateCompilationAsset(
+    name: string,
+    asset: { source: () => string | Buffer },
+    compiler: {
+      webpack?: { sources?: unknown };
+      rspack?: { sources?: unknown };
+    },
+    compilation: {
+      updateAsset?: (name: string, newSource: unknown) => void;
+    },
+  ) {
+    if (!/\.[jt]sx?$/.test(name) || name.endsWith(".d.ts")) return;
+    const source = asset.source();
+    const content = typeof source === "string" ? source : source.toString("utf-8");
+    const processed = postProcessBundle(content);
+    if (processed === content) return;
+
+    const sources = (compiler.webpack?.sources ?? compiler.rspack?.sources) as
+      | Record<string, new (source: string) => unknown>
+      | undefined;
+    const RawSource = sources?.RawSource;
+    if (RawSource) {
+      compilation.updateAsset?.(name, new RawSource(processed));
+    } else if (compilation.updateAsset) {
+      compilation.updateAsset(name, {
+        source: () => processed,
+        size: () => Buffer.byteLength(processed),
+      });
+    }
+  }
+
+  function setupWebpackLikeCompiler(compiler: WebpackCompiler | RspackCompiler) {
+    handledByFramework = true;
+    const c = compiler as unknown as {
+      options?: { context?: string; output?: { path?: string } };
+      webpack?: { sources?: unknown };
+      rspack?: { sources?: unknown };
+      hooks?: {
+        thisCompilation?: {
+          tap: (name: string, cb: (compilation: Record<string, unknown>) => void) => void;
+        };
+        compilation?: {
+          tap: (name: string, cb: (compilation: Record<string, unknown>) => void) => void;
+        };
+        afterEmit?: {
+          tapAsync: (
+            name: string,
+            cb: (_compilation: unknown, callback: () => void) => void,
+          ) => void;
+        };
+      };
+    };
+
+    if (c.options?.context) {
+      rootDir = c.options.context;
+    }
+    if (c.options?.output?.path) {
+      outDir = c.options.output.path;
+    }
+
+    let processedInCompilation = false;
+
+    const tapProcessAssets = (compilation: Record<string, unknown>) => {
+      const hooks = compilation.hooks as
+        | {
+            processAssets?: {
+              tap: (
+                options: { name: string; stage: number },
+                fn: (assets: Record<string, { source: () => string | Buffer }>) => void,
+              ) => void;
+            };
+          }
+        | undefined;
+      if (!hooks?.processAssets) return;
+      const stage = (compilation.PROCESS_ASSETS_STAGE_OPTIMIZE as number | undefined) ?? 100;
+      hooks.processAssets.tap(
+        {
+          name: PLUGIN_NAME,
+          stage,
+        },
+        (assets: Record<string, { source: () => string | Buffer }>) => {
+          for (const [name, asset] of Object.entries(assets)) {
+            updateCompilationAsset(
+              name,
+              asset,
+              c,
+              compilation as { updateAsset?: (n: string, s: unknown) => void },
+            );
+          }
+          processedInCompilation = true;
+        },
+      );
+    };
+
+    if (c.hooks?.thisCompilation) {
+      c.hooks.thisCompilation.tap(PLUGIN_NAME, tapProcessAssets);
+    } else if (c.hooks?.compilation) {
+      c.hooks.compilation.tap(PLUGIN_NAME, tapProcessAssets);
+    }
+
+    c.hooks?.afterEmit?.tapAsync(PLUGIN_NAME, (_compilation: unknown, callback: () => void) => {
+      warnUnmatchedGlobals();
+      if (!processedInCompilation) {
+        postProcessOutputFiles();
+      }
+      copyFiles();
+      callback();
+    });
+  }
+
   return {
     name: PLUGIN_NAME,
 
@@ -228,25 +338,9 @@ export const unpluginFactory = (
     // Rolldown-specific hooks
     rolldown: rollupCompatibleHooks,
 
-    webpack(compiler: WebpackCompiler) {
-      handledByFramework = true;
-      if (compiler.options.context) {
-        rootDir = compiler.options.context;
-      }
-      if (compiler.options.output.path) {
-        outDir = compiler.options.output.path;
-      }
+    webpack: setupWebpackLikeCompiler,
 
-      compiler.hooks.afterEmit.tapAsync(
-        PLUGIN_NAME,
-        (_compilation: unknown, callback: () => void) => {
-          warnUnmatchedGlobals();
-          postProcessOutputFiles();
-          copyFiles();
-          callback();
-        },
-      );
-    },
+    rspack: setupWebpackLikeCompiler,
 
     // esbuild-specific hooks
     esbuild: {

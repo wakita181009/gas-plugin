@@ -31,6 +31,10 @@
     "./bun": {
       "types": "./dist/bun.d.ts",
       "import": "./dist/bun.js"
+    },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/dialog.js"
     }
   },
   "files": [

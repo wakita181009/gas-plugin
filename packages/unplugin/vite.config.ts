@@ -13,6 +13,7 @@ export default defineConfig({
         rolldown: "src/rolldown.ts",
         esbuild: "src/esbuild.ts",
         bun: "src/bun.ts",
+        dialog: "src/dialog.ts",
       },
       formats: ["es"],
     },

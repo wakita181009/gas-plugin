@@ -1,3 +1,5 @@
+import type { GasDialogsOption } from "./dialog.js";
+
 export interface WebpackCompiler {
   options: {
     context?: string;
@@ -47,4 +49,23 @@ export interface GasPluginOptions {
    * @default true
    */
   autoGlobals?: boolean;
+
+  /**
+   * Dialog / modal HTML entries to bundle into self-contained, single-file HTML outputs
+   * in the output directory (e.g. for HtmlService.createHtmlOutputFromFile).
+   * All referenced CSS stylesheets and JavaScript scripts are automatically inlined.
+   *
+   * @example
+   * ```ts
+   * dialogs: ["src/ui/dialogs/ * /index.html"]
+   * ```
+   *
+   * @example
+   * ```ts
+   * dialogs: [
+   *   { entry: "src/dialogs/pointage/index.html", name: "dialog-pointage", plugins: [solid()] }
+   * ]
+   * ```
+   */
+  dialogs?: GasDialogsOption;
 }

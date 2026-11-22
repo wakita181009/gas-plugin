@@ -11,6 +11,7 @@ import { dirname, resolve } from "node:path";
 import type { PluginBuild as EsbuildPluginBuild } from "esbuild";
 import { createUnplugin, type UnpluginOptions } from "unplugin";
 import type { BuildEnvironmentOptions, UserConfig as ViteUserConfig } from "vite";
+import { bundleDialogs, createSingleFileHtmlPlugin, resolveDialogEntries } from "./core/dialog.js";
 import { detectNamesToProtect } from "./core/globals.js";
 import { copyFilesFlat, resolveIncludeFiles } from "./core/include.js";
 import { postProcessBundle } from "./core/post-process.js";
@@ -19,13 +20,26 @@ import type { GasPluginOptions, WebpackCompiler } from "./core/types.js";
 import { extractFirstInput, findRootDir, processBundle } from "./core/utils.js";
 
 export type { GasPluginOptions };
-export { postProcessBundle, removeExportBlocks, stripExportKeywords };
+export {
+  bundleDialogs,
+  createSingleFileHtmlPlugin,
+  postProcessBundle,
+  removeExportBlocks,
+  resolveDialogEntries,
+  stripExportKeywords,
+};
 
 const GLOBALS_MARKER = "/* __GAS_GLOBALS__ */";
 const PLUGIN_NAME = "@gas-plugin/unplugin";
 
 export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions => {
-  const { manifest = "appsscript.json", include = [], globals = [], autoGlobals = true } = options;
+  const {
+    manifest = "appsscript.json",
+    include = [],
+    globals = [],
+    autoGlobals = true,
+    dialogs,
+  } = options;
 
   let rootDir = process.cwd();
   let outDir = "dist";
@@ -131,6 +145,14 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
     }
   }
 
+  function handleBundleClosing(): Promise<void> | void {
+    warnUnmatchedGlobals();
+    copyFiles();
+    if (dialogs) {
+      return bundleDialogs(dialogs, { rootDir, outDir: resolveOutDir() });
+    }
+  }
+
   return {
     name: PLUGIN_NAME,
 
@@ -177,9 +199,8 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
         processBundle(bundle);
       },
 
-      closeBundle() {
-        warnUnmatchedGlobals();
-        copyFiles();
+      async closeBundle() {
+        await handleBundleClosing();
       },
     },
 
@@ -203,9 +224,8 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
         processBundle(bundle);
       },
 
-      closeBundle() {
-        warnUnmatchedGlobals();
-        copyFiles();
+      async closeBundle() {
+        await handleBundleClosing();
       },
     },
 
@@ -229,9 +249,8 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
         processBundle(bundle);
       },
 
-      closeBundle() {
-        warnUnmatchedGlobals();
-        copyFiles();
+      async closeBundle() {
+        await handleBundleClosing();
       },
     },
 
@@ -247,10 +266,13 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
       compiler.hooks.afterEmit.tapAsync(
         PLUGIN_NAME,
         (_compilation: unknown, callback: () => void) => {
-          warnUnmatchedGlobals();
           postProcessOutputFiles();
-          copyFiles();
-          callback();
+          const res = handleBundleClosing();
+          if (res && typeof res.then === "function") {
+            res.then(() => callback()).catch(() => callback());
+          } else {
+            callback();
+          }
         },
       );
     },
@@ -272,11 +294,10 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
     },
 
     // writeBundle: universal fallback for esbuild/Bun (skipped when framework handles it)
-    writeBundle() {
+    async writeBundle() {
       if (handledByFramework) return;
-      warnUnmatchedGlobals();
       postProcessOutputFiles();
-      copyFiles();
+      await handleBundleClosing();
     },
   };
 };

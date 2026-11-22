@@ -302,6 +302,6 @@ export const unpluginFactory = (options: GasPluginOptions = {}): UnpluginOptions
   };
 };
 
-export const unplugin = createUnplugin(unpluginFactory);
+export const unplugin = /* @__PURE__ */ createUnplugin(unpluginFactory);
 
 export default unplugin;

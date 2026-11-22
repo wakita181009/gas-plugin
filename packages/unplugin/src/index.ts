@@ -14,12 +14,12 @@ import type { BuildEnvironmentOptions, UserConfig as ViteUserConfig } from "vite
 import { detectNamesToProtect } from "./core/globals.js";
 import { copyFilesFlat, resolveIncludeFiles } from "./core/include.js";
 import { postProcessBundle } from "./core/post-process.js";
-import { removeExportBlocks, stripExportKeywords } from "./core/transforms.js";
+import { removeExportBlocks, stripExportKeywords, stripExports } from "./core/transforms.js";
 import type { GasPluginOptions, WebpackCompiler } from "./core/types.js";
 import { extractFirstInput, findRootDir, processBundle } from "./core/utils.js";
 
 export type { GasPluginOptions };
-export { postProcessBundle, removeExportBlocks, stripExportKeywords };
+export { postProcessBundle, removeExportBlocks, stripExportKeywords, stripExports };
 
 const GLOBALS_MARKER = "/* __GAS_GLOBALS__ */";
 const PLUGIN_NAME = "@gas-plugin/unplugin";

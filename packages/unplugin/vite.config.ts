@@ -28,6 +28,8 @@ export default defineConfig({
         "node:path",
         "node:fs/promises",
         "tinyglobby",
+        "oxc-parser",
+        "magic-string",
       ],
       output: {
         exports: "named",

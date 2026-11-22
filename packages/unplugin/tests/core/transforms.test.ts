@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { removeExportBlocks, stripExportKeywords } from "../../src";
+import { removeExportBlocks, stripExportKeywords, stripExports } from "../../src";
 
 describe("stripExportKeywords", () => {
   it("strips export from function declarations", () => {
@@ -146,5 +146,68 @@ describe("removeExportBlocks", () => {
     const input = "function foo() {}\nexport { foo }";
     const result = removeExportBlocks(input);
     expect(result).toBe("function foo() {}\n");
+  });
+
+  it("removes multiline export block correctly", () => {
+    const input = [
+      "function foo() {}",
+      "function bar() {}",
+      "export {",
+      "  foo,",
+      "  bar as baz,",
+      "};",
+    ].join("\n");
+    const result = removeExportBlocks(input);
+    expect(result.trim()).toBe("function foo() {}\nfunction bar() {}");
+  });
+
+  it("removes export all declaration", () => {
+    const input = "function foo() {}\nexport * from './other';";
+    const result = removeExportBlocks(input);
+    expect(result.trim()).toBe("function foo() {}");
+  });
+});
+
+describe("stripExports (single-pass AST transformation)", () => {
+  it("strips inline export keywords and removes export blocks in a single pass", () => {
+    const input = [
+      "export function onOpen() { console.log('open'); }",
+      "export const API_KEY = 'secret';",
+      "function helper() {}",
+      "export { helper as doHelper };",
+      "export default function main() {}",
+    ].join("\n");
+
+    const result = stripExports(input);
+    expect(result).toBe(
+      [
+        "function onOpen() { console.log('open'); }",
+        "const API_KEY = 'secret';",
+        "function helper() {}",
+        "function main() {}",
+      ].join("\n"),
+    );
+  });
+
+  it("handles anonymous default export expressions", () => {
+    const input = "export default { hello: 'world' };";
+    const result = stripExports(input);
+    expect(result).toBe("const __gas_default__ = { hello: 'world' };");
+  });
+
+  it("removes globals marker injections in the same pass", () => {
+    const input = [
+      "export function doGet() {}",
+      "/* __GAS_GLOBALS__ */ globalThis.__gas_keep__ = [doGet];",
+      "export { doGet };",
+    ].join("\n");
+    const result = stripExports(input);
+    expect(result.trim()).toBe("function doGet() {}");
+  });
+
+  it("handles empty or export-free code unchanged", () => {
+    const input = "function foo() {}\nconst bar = 42;";
+    expect(stripExports(input)).toBe(input);
+    expect(stripExports("")).toBe("");
   });
 });

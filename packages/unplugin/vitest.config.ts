@@ -5,14 +5,7 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     coverage: {
       provider: "v8",
-      include: [
-        "src/index.ts",
-        "src/core/transforms.ts",
-        "src/core/include.ts",
-        "src/core/globals.ts",
-        "src/core/post-process.ts",
-        "src/core/utils.ts",
-      ],
+      include: ["src/index.ts", "src/core/*.ts"],
       thresholds: {
         statements: 80,
         branches: 75,

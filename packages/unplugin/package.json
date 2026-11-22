@@ -3,6 +3,7 @@
   "version": "0.2.2",
   "description": "Universal bundler plugin for Google Apps Script projects (Vite, Rollup, Rolldown, webpack, esbuild, Bun)",
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -31,6 +32,10 @@
     "./bun": {
       "types": "./dist/bun.d.ts",
       "import": "./dist/bun.js"
+    },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/dialog.js"
     }
   },
   "files": [

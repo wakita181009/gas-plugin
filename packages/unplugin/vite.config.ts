@@ -1,6 +1,25 @@
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 
+const bundlerOptions = {
+  external: [
+    "unplugin",
+    "vite",
+    "rollup",
+    "rolldown",
+    "webpack",
+    "esbuild",
+    "node:fs",
+    "node:path",
+    "node:fs/promises",
+    "node:module",
+    "tinyglobby",
+  ],
+  output: {
+    exports: "named",
+  },
+};
+
 export default defineConfig({
   plugins: [dts({ rollupTypes: true })],
   build: {
@@ -13,26 +32,12 @@ export default defineConfig({
         rolldown: "src/rolldown.ts",
         esbuild: "src/esbuild.ts",
         bun: "src/bun.ts",
+        dialog: "src/dialog.ts",
       },
       formats: ["es"],
     },
-    rolldownOptions: {
-      external: [
-        "unplugin",
-        "vite",
-        "rollup",
-        "rolldown",
-        "webpack",
-        "esbuild",
-        "node:fs",
-        "node:path",
-        "node:fs/promises",
-        "tinyglobby",
-      ],
-      output: {
-        exports: "named",
-      },
-    },
+    rollupOptions: bundlerOptions,
+    rolldownOptions: bundlerOptions,
     minify: false,
   },
 });
